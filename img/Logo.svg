@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="49px" height="56px" viewBox="0 0 49 56" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Page 1 Copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
+        <g id="Page-1-Copy" transform="translate(1.000000, 1.000000)" stroke="#323232" stroke-width="2">
+            <path d="M35.2106586,20.2154062 L23.5037263,26.9991562" id="Stroke-1" stroke-linecap="round"></path>
+            <path d="M46.9138458,27.0279 L35.2106586,20.2154625" id="Stroke-2" stroke-linecap="round"></path>
+            <path d="M35.2106586,33.5904 L46.9138458,27.0279" id="Stroke-4" stroke-linecap="round"></path>
+            <path d="M23.503745,26.9991937 L35.2106773,33.5903812" id="Stroke-7" stroke-linecap="round"></path>
+            <path d="M35.2106586,47.3404125 L23.5037263,40.6125375" id="Stroke-8"></path>
+            <path d="M35.2106586,6.71540625 L23.5037263,13.3975312" id="Stroke-9"></path>
+            <path d="M34,20.2153312 L34,6.71533125" id="Stroke-10"></path>
+            <path d="M34,47.3404125 L34,33.590475" id="Stroke-11"></path>
+            <path d="M11.7968127,20.2204688 L23.503745,26.9991563" id="Stroke-12" stroke-linecap="round"></path>
+            <path d="M0.093625498,27.0329625 L11.7968127,20.220525" id="Stroke-13" stroke-linecap="round"></path>
+            <path d="M11.7968127,33.5954625 L0.093625498,27.0329625" id="Stroke-15" stroke-linecap="round"></path>
+            <polyline id="Stroke-18" points="11.7968127 33.5954625 23.503745 26.9992125 23.503745 40.6124625 11.7968127 47.3454"></polyline>
+            <polygon id="Stroke-19" points="23.5024904 0.09376875 0.0936816733 13.3455187 0.0936816733 40.7205187 23.5038012 53.9679562 46.9139207 40.7154562 46.9139207 13.3404562"></polygon>
+            <polyline id="Stroke-21" points="23.503745 26.9991937 23.503745 13.3975687 11.7968127 6.72050625"></polyline>
+            <path d="M11,20.2203937 L11,6.72039375" id="Stroke-22"></path>
+            <polygon id="Stroke-23" points="11.7968127 33.5954625 11.7968127 47.3454"></polygon>
+        </g>
+    </g>
+</svg>
