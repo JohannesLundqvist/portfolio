@@ -6406,6 +6406,9 @@ html {
 .modal-backdrop {
   display: none; }
 
+.carousel-cell img {
+  width: 100vw; }
+
 .project-subheading {
   text-transform: uppercase;
   margin-bottom: 0rem;
