@@ -6407,7 +6407,7 @@ html {
   display: none; }
 
 .carousel-cell img {
-  width: 100vw; }
+  height: 500px; }
 
 .project-subheading {
   text-transform: uppercase;
@@ -6519,4 +6519,22 @@ section.project-contact {
     line-height: 20px; }
 
 .project-blue {
-  color: blue; }
+  color: #5BB2E1; }
+
+.project-darkblue {
+  color: #275D89; }
+
+.project-gold {
+  color: #E6AC60; }
+
+.project-green {
+  color: #3896A1; }
+
+.project-turquoise {
+  color: #0DCBA0; }
+
+.project-red {
+  color: #B92E51; }
+
+.project-yellow {
+  color: #F1A208; }
