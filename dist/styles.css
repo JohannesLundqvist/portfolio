@@ -6147,7 +6147,7 @@ section {
     max-width: 500px;
     min-width: 250px;
     height: auto;
-    width: 50%;
+    width: 45%;
     z-index: 200;
     top: 0;
     left: 50%;
@@ -6407,7 +6407,26 @@ html {
   display: none; }
 
 .carousel-cell img {
-  height: 500px; }
+  width: 100vw; }
+
+@media (max-width: 767px) {
+  .bellastel-carousel .carousel-cell img {
+    display: block;
+    height: 300px; } }
+
+@media (min-width: 768px) {
+  .bellastel-carousel .carousel-cell {
+    width: 100%; }
+    .bellastel-carousel .carousel-cell img {
+      margin: 0 auto;
+      display: block;
+      height: 300px; } }
+
+.project-hero .project-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover; }
 
 .project-subheading {
   text-transform: uppercase;

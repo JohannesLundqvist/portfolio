@@ -10311,13 +10311,20 @@ $('.carpool-carousel').flickity({
   wrapAround: true
 });
 $('.honeycomb-carousel').flickity({
-  wrapAround: true
+  wrapAround: true,
+  cellAlign: 'left',
+  contain: true
 });
 $('.turnapp-carousel').flickity({
-  wrapAround: true
+  wrapAround: true,
+  cellAlign: 'left',
+  contain: true
 });
 $('.bellastel-carousel').flickity({
-  wrapAround: true
+  wrapAround: true,
+  cellAlign: 'left',
+  contain: true,
+  percentPosition: false
 });
 
 //var screenWidth = $(window).height()-300;
