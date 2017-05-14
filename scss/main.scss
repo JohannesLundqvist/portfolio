@@ -1,0 +1,268 @@
+//Main
+
+body{
+  position: relative;
+  padding: 0 !important;
+}
+img{
+  align-self: center;
+}
+.no-overflow{
+overflow-x: hidden;
+}
+.circle {
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+  line-height: 70px;
+  background: black;
+  color: white;
+}
+.btn{
+  &:focus{
+    box-shadow: none;
+  }
+}
+.container{
+  z-index:200;
+}
+.bg-grey{
+  background: #F3F3F3;;
+}
+.bg-transparent{
+  background: transparent;
+}
+
+.no-padding{
+  padding: 0;
+}
+h2{
+  text-transform: uppercase;
+}
+.email-me{
+  font-family: GothamBold;
+  font-size: 1.25rem;
+}
+//Sections
+.section-heading{
+padding-bottom: 3rem;
+img{
+  max-width: 90%;
+}
+
+}
+
+section{
+  position: relative;
+  z-index: 1;
+}
+.section-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 300px;
+  max-height: 1000px;
+  height: 100vh;
+}
+
+
+.section:nth-child(even){
+  background: #F3F3F3;
+  &:before{
+  background: #FFF;
+  }
+}
+.section-workflow {
+  &:before {
+  background: #F3F3F3;
+  }
+}
+
+.section-projects, .section-contact,.section-workflow {
+  padding-top: 5rem;
+  padding-bottom: 7rem;
+  @media (max-width: 575px){
+    padding-top:5rem;
+    padding-bottom: 5rem;
+  }
+  &:before{
+    content: '';
+    display: block;
+    height: 200px;
+    width: 120%;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    -webkit-transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+    -ms-transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+    transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+    -webkit-transform-origin: center top;
+    -ms-transform-origin: center top;
+    transform-origin: center top;
+    z-index: -1;
+
+    @media (min-width: 1024px){
+      -webkit-transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+      -ms-transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+      transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+    }
+    @media (min-width: 1920px){
+      height: 230px;
+      -webkit-transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+      -ms-transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+      transform: rotate(-3deg)translateX(-50%)translateY(-60%);
+    }
+    @media (min-width: 2500px){
+      height: 230px;
+      -webkit-transform: rotate(-3deg)translateX(-50%)translateY(-70%);
+      -ms-transform: rotate(-3deg)translateX(-50%)translateY(-70%);
+      transform: rotate(-3deg)translateX(-50%)translateY(-70%);
+    }
+
+
+    @media (max-width: 767px){
+      -webkit-transform: rotate(-5deg)translateX(-50%)translateY(-70%);
+      -ms-transform: rotate(-5deg)translateX(-50%)translateY(-70%);
+      transform: rotate(-5deg)translateX(-50%)translateY(-70%);
+    }
+    @media (max-width: 575px){
+      height: 150px;
+      -webkit-transform: rotate(-5deg)translateX(-50%)translateY(-40%);
+      -ms-transform: rotate(-5deg)translateX(-50%)translateY(-40%);
+      transform: rotate(-5deg)translateX(-50%)translateY(-40%);
+    }
+}
+}
+.section-about {
+  padding-top: 8rem;
+  padding-bottom: 7rem;
+
+  @media (max-width: 575px){
+    padding-top:4rem;
+    padding-bottom: 4rem;
+  }
+  &:before{
+    background: #FFF;
+    content: '';
+    display: block;
+    height: 200px;
+    width: 120%;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    -webkit-transform: rotate(-3deg)translateX(-50%)translateY(-70%);
+    -ms-transform: rotate(-3deg)translateX(-50%)translateY(-70%);
+    transform: rotate(-3deg)translateX(-50%)translateY(-70%);
+    -webkit-transform-origin: center top;
+    -ms-transform-origin: center top;
+    transform-origin: center top;
+    z-index: -1;
+    @media (min-width: 1920px){
+      -webkit-transform: rotate(-3deg)translateX(-50%)translateY(-80%);
+      -ms-transform: rotate(-3deg)translateX(-50%)translateY(-80%);
+      transform: rotate(-3deg)translateX(-50%)translateY(-80%);
+    }
+    @media (max-width: 767px){
+      -webkit-transform: rotate(-5deg)translateX(-50%)translateY(-60%);
+      -ms-transform: rotate(-5deg)translateX(-50%)translateY(-60%);
+      transform: rotate(-5deg)translateX(-50%)translateY(-60%);
+    }
+    @media (max-width: 575px){
+      height: 140px;
+      -webkit-transform: rotate(-5deg)translateX(-50%)translateY(-60%);
+      -ms-transform: rotate(-5deg)translateX(-50%)translateY(-60%);
+      transform: rotate(-5deg)translateX(-50%)translateY(-60%);
+    }
+}
+.logo {
+  position: absolute;
+  max-width: 500px;
+  min-width: 250px;
+  height: auto;
+  width: 45%;
+  z-index: 200;
+  top:0;
+  left: 50%;
+  transform: translate(-50%,-80%);
+  -webkit-transform: translate(-50%,-80%);
+  -ms-transform: translate(-50%,-80%);
+  @media (min-width: 768px){
+    max-width: 450px;
+
+  }
+  @media (min-width: 1600px){
+    max-width: 500px;
+  }
+  @media (min-width: 1920px){
+    max-width: 600px;
+    transform: translate(-50%,-70%);
+    -webkit-transform: translate(-50%,-70%);
+    -ms-transform: translate(-50%,-70%);
+  }
+}
+}
+
+//Project cards
+#next-project{
+  .card-img-overlay{
+    background: #dbdbdb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .card-title{
+      font-family: 'GothamBoldItalic';
+      color: rgba(56,56,56,1);
+      text-transform: uppercase;
+      text-align: center;
+    }
+  }
+}
+.card-project{
+overflow: hidden;
+
+div.card-img-overlay{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: rgba(56, 56, 56, 0.5);
+  transition: 1s ease;
+  .card-title{
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0rem;
+  }
+  .card-plate{
+    padding: 1.25rem;
+    position: relative;
+  }
+}
+@media (min-width: 1200px){
+&:hover{
+  div.card-img-overlay{
+  background-color: rgba(56, 56, 56, 0);
+  transition: 1s ease;
+}
+img {
+      transform:scale(1.05);
+      transition: 1s ease;
+    }
+    .card-plate{
+      opacity:0;
+      transition: 0.5s ease;
+    }
+}
+}
+}
+  .card-img, .project-img{
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+.card{
+  height:100%;
+  min-height: 250px;
+  border: none;
+
+}

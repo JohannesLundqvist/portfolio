@@ -1,0 +1,27 @@
+
+.modal-dialog{
+  max-width: 100%;
+  margin:0;
+}
+.modal-body{
+  overflow-y: auto;
+  height: 100vh;
+}
+.modal-header{
+  padding:0;
+}
+.modal.show{
+  opacity: 1;
+}
+
+.modal{
+  opacity: 0;
+    transition: opacity 0.3s ease-in;
+    transition-property: opacity;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in;
+    transition-delay: initial;
+}
+.modal-backdrop{
+  display: none;
+}
