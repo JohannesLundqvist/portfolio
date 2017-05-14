@@ -2,7 +2,6 @@ var gulp        = require('gulp');
 var browserSync = require('browser-sync').create();
 var sass        = require('gulp-sass');
 var concat      = require('gulp-concat');
-var imagemin = require('gulp-imagemin');
 
 // Static Server + watching scss/html files
 gulp.task('serve', ['sass'], function() {
@@ -27,7 +26,5 @@ gulp.task('scripts', function() {
     .pipe(concat('all.js'))
     .pipe(gulp.dest('dist'));
 });
-
-
 
 gulp.task('default', ['serve', 'scripts']);
