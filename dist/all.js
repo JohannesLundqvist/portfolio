@@ -10253,25 +10253,2122 @@ return jQuery;
 } );
 
 /*!
+ * @fileOverview TouchSwipe - jQuery Plugin
+ * @version 1.6.18
+ *
+ * @author Matt Bryson http://www.github.com/mattbryson
+ * @see https://github.com/mattbryson/TouchSwipe-Jquery-Plugin
+ * @see http://labs.rampinteractive.co.uk/touchSwipe/
+ * @see http://plugins.jquery.com/project/touchSwipe
+ * @license
+ * Copyright (c) 2010-2015 Matt Bryson
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ */
+
+/*
+ *
+ * Changelog
+ * $Date: 2010-12-12 (Wed, 12 Dec 2010) $
+ * $version: 1.0.0
+ * $version: 1.0.1 - removed multibyte comments
+ *
+ * $Date: 2011-21-02 (Mon, 21 Feb 2011) $
+ * $version: 1.1.0 	- added allowPageScroll property to allow swiping and scrolling of page
+ *					- changed handler signatures so one handler can be used for multiple events
+ * $Date: 2011-23-02 (Wed, 23 Feb 2011) $
+ * $version: 1.2.0 	- added click handler. This is fired if the user simply clicks and does not swipe. The event object and click target are passed to handler.
+ *					- If you use the http://code.google.com/p/jquery-ui-for-ipad-and-iphone/ plugin, you can also assign jQuery mouse events to children of a touchSwipe object.
+ * $version: 1.2.1 	- removed console log!
+ *
+ * $version: 1.2.2 	- Fixed bug where scope was not preserved in callback methods.
+ *
+ * $Date: 2011-28-04 (Thurs, 28 April 2011) $
+ * $version: 1.2.4 	- Changed licence terms to be MIT or GPL inline with jQuery. Added check for support of touch events to stop non compatible browsers erroring.
+ *
+ * $Date: 2011-27-09 (Tues, 27 September 2011) $
+ * $version: 1.2.5 	- Added support for testing swipes with mouse on desktop browser (thanks to https://github.com/joelhy)
+ *
+ * $Date: 2012-14-05 (Mon, 14 May 2012) $
+ * $version: 1.2.6 	- Added timeThreshold between start and end touch, so user can ignore slow swipes (thanks to Mark Chase). Default is null, all swipes are detected
+ *
+ * $Date: 2012-05-06 (Tues, 05 June 2012) $
+ * $version: 1.2.7 	- Changed time threshold to have null default for backwards compatibility. Added duration param passed back in events, and refactored how time is handled.
+ *
+ * $Date: 2012-05-06 (Tues, 05 June 2012) $
+ * $version: 1.2.8 	- Added the possibility to return a value like null or false in the trigger callback. In that way we can control when the touch start/move should take effect or not (simply by returning in some cases return null; or return false;) This effects the ontouchstart/ontouchmove event.
+ *
+ * $Date: 2012-06-06 (Wed, 06 June 2012) $
+ * $version: 1.3.0 	- Refactored whole plugin to allow for methods to be executed, as well as exposed defaults for user override. Added 'enable', 'disable', and 'destroy' methods
+ *
+ * $Date: 2012-05-06 (Fri, 05 June 2012) $
+ * $version: 1.3.1 	- Bug fixes  - bind() with false as last argument is no longer supported in jQuery 1.6, also, if you just click, the duration is now returned correctly.
+ *
+ * $Date: 2012-29-07 (Sun, 29 July 2012) $
+ * $version: 1.3.2	- Added fallbackToMouseEvents option to NOT capture mouse events on non touch devices.
+ * 			- Added "all" fingers value to the fingers property, so any combination of fingers triggers the swipe, allowing event handlers to check the finger count
+ *
+ * $Date: 2012-09-08 (Thurs, 9 Aug 2012) $
+ * $version: 1.3.3	- Code tidy prep for minefied version
+ *
+ * $Date: 2012-04-10 (wed, 4 Oct 2012) $
+ * $version: 1.4.0	- Added pinch support, pinchIn and pinchOut
+ *
+ * $Date: 2012-11-10 (Thurs, 11 Oct 2012) $
+ * $version: 1.5.0	- Added excludedElements, a jquery selector that specifies child elements that do NOT trigger swipes. By default, this is .noSwipe
+ *
+ * $Date: 2012-22-10 (Mon, 22 Oct 2012) $
+ * $version: 1.5.1	- Fixed bug with jQuery 1.8 and trailing comma in excludedElements
+ *					- Fixed bug with IE and eventPreventDefault()
+ * $Date: 2013-01-12 (Fri, 12 Jan 2013) $
+ * $version: 1.6.0	- Fixed bugs with pinching, mainly when both pinch and swipe enabled, as well as adding time threshold for multifinger gestures, so releasing one finger beofre the other doesnt trigger as single finger gesture.
+ *					- made the demo site all static local HTML pages so they can be run locally by a developer
+ *					- added jsDoc comments and added documentation for the plugin
+ *					- code tidy
+ *					- added triggerOnTouchLeave property that will end the event when the user swipes off the element.
+ * $Date: 2013-03-23 (Sat, 23 Mar 2013) $
+ * $version: 1.6.1	- Added support for ie8 touch events
+ * $version: 1.6.2	- Added support for events binding with on / off / bind in jQ for all callback names.
+ *                   - Deprecated the 'click' handler in favour of tap.
+ *                   - added cancelThreshold property
+ *                   - added option method to update init options at runtime
+ * $version 1.6.3    - added doubletap, longtap events and longTapThreshold, doubleTapThreshold property
+ *
+ * $Date: 2013-04-04 (Thurs, 04 April 2013) $
+ * $version 1.6.4    - Fixed bug with cancelThreshold introduced in 1.6.3, where swipe status no longer fired start event, and stopped once swiping back.
+ *
+ * $Date: 2013-08-24 (Sat, 24 Aug 2013) $
+ * $version 1.6.5    - Merged a few pull requests fixing various bugs, added AMD support.
+ *
+ * $Date: 2014-06-04 (Wed, 04 June 2014) $
+ * $version 1.6.6 	- Merge of pull requests.
+ *    				- IE10 touch support
+ *    				- Only prevent default event handling on valid swipe
+ *    				- Separate license/changelog comment
+ *    				- Detect if the swipe is valid at the end of the touch event.
+ *    				- Pass fingerdata to event handlers.
+ *    				- Add 'hold' gesture
+ *    				- Be more tolerant about the tap distance
+ *    				- Typos and minor fixes
+ *
+ * $Date: 2015-22-01 (Thurs, 22 Jan 2015) $
+ * $version 1.6.7    - Added patch from https://github.com/mattbryson/TouchSwipe-Jquery-Plugin/issues/206 to fix memory leak
+ *
+ * $Date: 2015-2-2 (Mon, 2 Feb 2015) $
+ * $version 1.6.8    - Added preventDefaultEvents option to proxy events regardless.
+ *					- Fixed issue with swipe and pinch not triggering at the same time
+ *
+ * $Date: 2015-9-6 (Tues, 9 June 2015) $
+ * $version 1.6.9    - Added PR from jdalton/hybrid to fix pointer events
+ *					- Added scrolling demo
+ *					- Added version property to plugin
+ *
+ * $Date: 2015-1-10 (Wed, 1 October 2015) $
+ * $version 1.6.10    - Added PR from beatspace to fix tap events
+ * $version 1.6.11    - Added PRs from indri-indri ( Doc tidyup), kkirsche ( Bower tidy up ), UziTech (preventDefaultEvents fixes )
+ *					 - Allowed setting multiple options via .swipe("options", options_hash) and more simply .swipe(options_hash) or exisitng instances
+ * $version 1.6.12    - Fixed bug with multi finger releases above 2 not triggering events
+ *
+ * $Date: 2015-12-18 (Fri, 18 December 2015) $
+ * $version 1.6.13    - Added PRs
+ *                    - Fixed #267 allowPageScroll not working correctly
+ * $version 1.6.14    - Fixed #220 / #248 doubletap not firing with swipes, #223 commonJS compatible
+ * $version 1.6.15    - More bug fixes
+ *
+ * $Date: 2016-04-29 (Fri, 29 April 2016) $
+ * $version 1.6.16    - Swipes with 0 distance now allow default events to trigger.  So tapping any form elements or A tags will allow default interaction, but swiping will trigger a swipe.
+                        Removed the a, input, select etc from the excluded Children list as the 0 distance tap solves that issue.
+* $Date: 2016-05-19  (Fri, 29 April 2016) $
+* $version 1.6.17     - Fixed context issue when calling instance methods via $("selector").swipe("method");
+* $version 1.6.18     - now honors fallbackToMouseEvents=false for MS Pointer events when a Mouse is used.
+
+ */
+
+/**
+ * See (http://jquery.com/).
+ * @name $
+ * @class
+ * See the jQuery Library  (http://jquery.com/) for full details.  This just
+ * documents the function and classes that are added to jQuery by this plug-in.
+ */
+
+/**
+ * See (http://jquery.com/)
+ * @name fn
+ * @class
+ * See the jQuery Library  (http://jquery.com/) for full details.  This just
+ * documents the function and classes that are added to jQuery by this plug-in.
+ * @memberOf $
+ */
+
+
+(function(factory) {
+  if (typeof define === 'function' && define.amd && define.amd.jQuery) {
+    // AMD. Register as anonymous module.
+    define(['jquery'], factory);
+  } else if (typeof module !== 'undefined' && module.exports) {
+    // CommonJS Module
+    factory(require("jquery"));
+  } else {
+    // Browser globals.
+    factory(jQuery);
+  }
+}(function($) {
+  "use strict";
+
+  //Constants
+  var VERSION = "1.6.18",
+    LEFT = "left",
+    RIGHT = "right",
+    UP = "up",
+    DOWN = "down",
+    IN = "in",
+    OUT = "out",
+
+    NONE = "none",
+    AUTO = "auto",
+
+    SWIPE = "swipe",
+    PINCH = "pinch",
+    TAP = "tap",
+    DOUBLE_TAP = "doubletap",
+    LONG_TAP = "longtap",
+    HOLD = "hold",
+
+    HORIZONTAL = "horizontal",
+    VERTICAL = "vertical",
+
+    ALL_FINGERS = "all",
+
+    DOUBLE_TAP_THRESHOLD = 10,
+
+    PHASE_START = "start",
+    PHASE_MOVE = "move",
+    PHASE_END = "end",
+    PHASE_CANCEL = "cancel",
+
+    SUPPORTS_TOUCH = 'ontouchstart' in window,
+
+    SUPPORTS_POINTER_IE10 = window.navigator.msPointerEnabled && !window.navigator.pointerEnabled && !SUPPORTS_TOUCH,
+
+    SUPPORTS_POINTER = (window.navigator.pointerEnabled || window.navigator.msPointerEnabled) && !SUPPORTS_TOUCH,
+
+    PLUGIN_NS = 'TouchSwipe';
+
+
+
+  /**
+  * The default configuration, and available options to configure touch swipe with.
+  * You can set the default values by updating any of the properties prior to instantiation.
+  * @name $.fn.swipe.defaults
+  * @namespace
+  * @property {int} [fingers=1] The number of fingers to detect in a swipe. Any swipes that do not meet this requirement will NOT trigger swipe handlers.
+  * @property {int} [threshold=75] The number of pixels that the user must move their finger by before it is considered a swipe.
+  * @property {int} [cancelThreshold=null] The number of pixels that the user must move their finger back from the original swipe direction to cancel the gesture.
+  * @property {int} [pinchThreshold=20] The number of pixels that the user must pinch their finger by before it is considered a pinch.
+  * @property {int} [maxTimeThreshold=null] Time, in milliseconds, between touchStart and touchEnd must NOT exceed in order to be considered a swipe.
+  * @property {int} [fingerReleaseThreshold=250] Time in milliseconds between releasing multiple fingers.  If 2 fingers are down, and are released one after the other, if they are within this threshold, it counts as a simultaneous release.
+  * @property {int} [longTapThreshold=500] Time in milliseconds between tap and release for a long tap
+  * @property {int} [doubleTapThreshold=200] Time in milliseconds between 2 taps to count as a double tap
+  * @property {function} [swipe=null] A handler to catch all swipes. See {@link $.fn.swipe#event:swipe}
+  * @property {function} [swipeLeft=null] A handler that is triggered for "left" swipes. See {@link $.fn.swipe#event:swipeLeft}
+  * @property {function} [swipeRight=null] A handler that is triggered for "right" swipes. See {@link $.fn.swipe#event:swipeRight}
+  * @property {function} [swipeUp=null] A handler that is triggered for "up" swipes. See {@link $.fn.swipe#event:swipeUp}
+  * @property {function} [swipeDown=null] A handler that is triggered for "down" swipes. See {@link $.fn.swipe#event:swipeDown}
+  * @property {function} [swipeStatus=null] A handler triggered for every phase of the swipe. See {@link $.fn.swipe#event:swipeStatus}
+  * @property {function} [pinchIn=null] A handler triggered for pinch in events. See {@link $.fn.swipe#event:pinchIn}
+  * @property {function} [pinchOut=null] A handler triggered for pinch out events. See {@link $.fn.swipe#event:pinchOut}
+  * @property {function} [pinchStatus=null] A handler triggered for every phase of a pinch. See {@link $.fn.swipe#event:pinchStatus}
+  * @property {function} [tap=null] A handler triggered when a user just taps on the item, rather than swipes it. If they do not move, tap is triggered, if they do move, it is not.
+  * @property {function} [doubleTap=null] A handler triggered when a user double taps on the item. The delay between taps can be set with the doubleTapThreshold property. See {@link $.fn.swipe.defaults#doubleTapThreshold}
+  * @property {function} [longTap=null] A handler triggered when a user long taps on the item. The delay between start and end can be set with the longTapThreshold property. See {@link $.fn.swipe.defaults#longTapThreshold}
+  * @property (function) [hold=null] A handler triggered when a user reaches longTapThreshold on the item. See {@link $.fn.swipe.defaults#longTapThreshold}
+  * @property {boolean} [triggerOnTouchEnd=true] If true, the swipe events are triggered when the touch end event is received (user releases finger).  If false, it will be triggered on reaching the threshold, and then cancel the touch event automatically.
+  * @property {boolean} [triggerOnTouchLeave=false] If true, then when the user leaves the swipe object, the swipe will end and trigger appropriate handlers.
+  * @property {string|undefined} [allowPageScroll='auto'] How the browser handles page scrolls when the user is swiping on a touchSwipe object. See {@link $.fn.swipe.pageScroll}.  <br/><br/>
+  									<code>"auto"</code> : all undefined swipes will cause the page to scroll in that direction. <br/>
+  									<code>"none"</code> : the page will not scroll when user swipes. <br/>
+  									<code>"horizontal"</code> : will force page to scroll on horizontal swipes. <br/>
+  									<code>"vertical"</code> : will force page to scroll on vertical swipes. <br/>
+  * @property {boolean} [fallbackToMouseEvents=true] If true mouse events are used when run on a non touch device, false will stop swipes being triggered by mouse events on non touch devices.
+  * @property {string} [excludedElements=".noSwipe"] A jquery selector that specifies child elements that do NOT trigger swipes. By default this excludes elements with the class .noSwipe .
+  * @property {boolean} [preventDefaultEvents=true] by default default events are cancelled, so the page doesn't move.  You can disable this so both native events fire as well as your handlers.
+
+  */
+  var defaults = {
+    fingers: 1,
+    threshold: 75,
+    cancelThreshold: null,
+    pinchThreshold: 20,
+    maxTimeThreshold: null,
+    fingerReleaseThreshold: 250,
+    longTapThreshold: 500,
+    doubleTapThreshold: 200,
+    swipe: null,
+    swipeLeft: null,
+    swipeRight: null,
+    swipeUp: null,
+    swipeDown: null,
+    swipeStatus: null,
+    pinchIn: null,
+    pinchOut: null,
+    pinchStatus: null,
+    click: null, //Deprecated since 1.6.2
+    tap: null,
+    doubleTap: null,
+    longTap: null,
+    hold: null,
+    triggerOnTouchEnd: true,
+    triggerOnTouchLeave: false,
+    allowPageScroll: "auto",
+    fallbackToMouseEvents: true,
+    excludedElements: ".noSwipe",
+    preventDefaultEvents: true
+  };
+
+
+
+  /**
+   * Applies TouchSwipe behaviour to one or more jQuery objects.
+   * The TouchSwipe plugin can be instantiated via this method, or methods within
+   * TouchSwipe can be executed via this method as per jQuery plugin architecture.
+   * An existing plugin can have its options changed simply by re calling .swipe(options)
+   * @see TouchSwipe
+   * @class
+   * @param {Mixed} method If the current DOMNode is a TouchSwipe object, and <code>method</code> is a TouchSwipe method, then
+   * the <code>method</code> is executed, and any following arguments are passed to the TouchSwipe method.
+   * If <code>method</code> is an object, then the TouchSwipe class is instantiated on the current DOMNode, passing the
+   * configuration properties defined in the object. See TouchSwipe
+   *
+   */
+  $.fn.swipe = function(method) {
+    var $this = $(this),
+      plugin = $this.data(PLUGIN_NS);
+
+    //Check if we are already instantiated and trying to execute a method
+    if (plugin && typeof method === 'string') {
+      if (plugin[method]) {
+        return plugin[method].apply(plugin, Array.prototype.slice.call(arguments, 1));
+      } else {
+        $.error('Method ' + method + ' does not exist on jQuery.swipe');
+      }
+    }
+
+    //Else update existing plugin with new options hash
+    else if (plugin && typeof method === 'object') {
+      plugin['option'].apply(plugin, arguments);
+    }
+
+    //Else not instantiated and trying to pass init object (or nothing)
+    else if (!plugin && (typeof method === 'object' || !method)) {
+      return init.apply(this, arguments);
+    }
+
+    return $this;
+  };
+
+  /**
+   * The version of the plugin
+   * @readonly
+   */
+  $.fn.swipe.version = VERSION;
+
+
+
+  //Expose our defaults so a user could override the plugin defaults
+  $.fn.swipe.defaults = defaults;
+
+  /**
+   * The phases that a touch event goes through.  The <code>phase</code> is passed to the event handlers.
+   * These properties are read only, attempting to change them will not alter the values passed to the event handlers.
+   * @namespace
+   * @readonly
+   * @property {string} PHASE_START Constant indicating the start phase of the touch event. Value is <code>"start"</code>.
+   * @property {string} PHASE_MOVE Constant indicating the move phase of the touch event. Value is <code>"move"</code>.
+   * @property {string} PHASE_END Constant indicating the end phase of the touch event. Value is <code>"end"</code>.
+   * @property {string} PHASE_CANCEL Constant indicating the cancel phase of the touch event. Value is <code>"cancel"</code>.
+   */
+  $.fn.swipe.phases = {
+    PHASE_START: PHASE_START,
+    PHASE_MOVE: PHASE_MOVE,
+    PHASE_END: PHASE_END,
+    PHASE_CANCEL: PHASE_CANCEL
+  };
+
+  /**
+   * The direction constants that are passed to the event handlers.
+   * These properties are read only, attempting to change them will not alter the values passed to the event handlers.
+   * @namespace
+   * @readonly
+   * @property {string} LEFT Constant indicating the left direction. Value is <code>"left"</code>.
+   * @property {string} RIGHT Constant indicating the right direction. Value is <code>"right"</code>.
+   * @property {string} UP Constant indicating the up direction. Value is <code>"up"</code>.
+   * @property {string} DOWN Constant indicating the down direction. Value is <code>"cancel"</code>.
+   * @property {string} IN Constant indicating the in direction. Value is <code>"in"</code>.
+   * @property {string} OUT Constant indicating the out direction. Value is <code>"out"</code>.
+   */
+  $.fn.swipe.directions = {
+    LEFT: LEFT,
+    RIGHT: RIGHT,
+    UP: UP,
+    DOWN: DOWN,
+    IN: IN,
+    OUT: OUT
+  };
+
+  /**
+   * The page scroll constants that can be used to set the value of <code>allowPageScroll</code> option
+   * These properties are read only
+   * @namespace
+   * @readonly
+   * @see $.fn.swipe.defaults#allowPageScroll
+   * @property {string} NONE Constant indicating no page scrolling is allowed. Value is <code>"none"</code>.
+   * @property {string} HORIZONTAL Constant indicating horizontal page scrolling is allowed. Value is <code>"horizontal"</code>.
+   * @property {string} VERTICAL Constant indicating vertical page scrolling is allowed. Value is <code>"vertical"</code>.
+   * @property {string} AUTO Constant indicating either horizontal or vertical will be allowed, depending on the swipe handlers registered. Value is <code>"auto"</code>.
+   */
+  $.fn.swipe.pageScroll = {
+    NONE: NONE,
+    HORIZONTAL: HORIZONTAL,
+    VERTICAL: VERTICAL,
+    AUTO: AUTO
+  };
+
+  /**
+   * Constants representing the number of fingers used in a swipe.  These are used to set both the value of <code>fingers</code> in the
+   * options object, as well as the value of the <code>fingers</code> event property.
+   * These properties are read only, attempting to change them will not alter the values passed to the event handlers.
+   * @namespace
+   * @readonly
+   * @see $.fn.swipe.defaults#fingers
+   * @property {string} ONE Constant indicating 1 finger is to be detected / was detected. Value is <code>1</code>.
+   * @property {string} TWO Constant indicating 2 fingers are to be detected / were detected. Value is <code>2</code>.
+   * @property {string} THREE Constant indicating 3 finger are to be detected / were detected. Value is <code>3</code>.
+   * @property {string} FOUR Constant indicating 4 finger are to be detected / were detected. Not all devices support this. Value is <code>4</code>.
+   * @property {string} FIVE Constant indicating 5 finger are to be detected / were detected. Not all devices support this. Value is <code>5</code>.
+   * @property {string} ALL Constant indicating any combination of finger are to be detected.  Value is <code>"all"</code>.
+   */
+  $.fn.swipe.fingers = {
+    ONE: 1,
+    TWO: 2,
+    THREE: 3,
+    FOUR: 4,
+    FIVE: 5,
+    ALL: ALL_FINGERS
+  };
+
+  /**
+   * Initialise the plugin for each DOM element matched
+   * This creates a new instance of the main TouchSwipe class for each DOM element, and then
+   * saves a reference to that instance in the elements data property.
+   * @internal
+   */
+  function init(options) {
+    //Prep and extend the options
+    if (options && (options.allowPageScroll === undefined && (options.swipe !== undefined || options.swipeStatus !== undefined))) {
+      options.allowPageScroll = NONE;
+    }
+
+    //Check for deprecated options
+    //Ensure that any old click handlers are assigned to the new tap, unless we have a tap
+    if (options.click !== undefined && options.tap === undefined) {
+      options.tap = options.click;
+    }
+
+    if (!options) {
+      options = {};
+    }
+
+    //pass empty object so we dont modify the defaults
+    options = $.extend({}, $.fn.swipe.defaults, options);
+
+    //For each element instantiate the plugin
+    return this.each(function() {
+      var $this = $(this);
+
+      //Check we havent already initialised the plugin
+      var plugin = $this.data(PLUGIN_NS);
+
+      if (!plugin) {
+        plugin = new TouchSwipe(this, options);
+        $this.data(PLUGIN_NS, plugin);
+      }
+    });
+  }
+
+  /**
+   * Main TouchSwipe Plugin Class.
+   * Do not use this to construct your TouchSwipe object, use the jQuery plugin method $.fn.swipe(); {@link $.fn.swipe}
+   * @private
+   * @name TouchSwipe
+   * @param {DOMNode} element The HTML DOM object to apply to plugin to
+   * @param {Object} options The options to configure the plugin with.  @link {$.fn.swipe.defaults}
+   * @see $.fh.swipe.defaults
+   * @see $.fh.swipe
+   * @class
+   */
+  function TouchSwipe(element, options) {
+
+    //take a local/instacne level copy of the options - should make it this.options really...
+    var options = $.extend({}, options);
+
+    var useTouchEvents = (SUPPORTS_TOUCH || SUPPORTS_POINTER || !options.fallbackToMouseEvents),
+      START_EV = useTouchEvents ? (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerDown' : 'pointerdown') : 'touchstart') : 'mousedown',
+      MOVE_EV = useTouchEvents ? (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerMove' : 'pointermove') : 'touchmove') : 'mousemove',
+      END_EV = useTouchEvents ? (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerUp' : 'pointerup') : 'touchend') : 'mouseup',
+      LEAVE_EV = useTouchEvents ? (SUPPORTS_POINTER ? 'mouseleave' : null) : 'mouseleave', //we manually detect leave on touch devices, so null event here
+      CANCEL_EV = (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerCancel' : 'pointercancel') : 'touchcancel');
+
+
+
+    //touch properties
+    var distance = 0,
+      direction = null,
+      currentDirection = null,
+      duration = 0,
+      startTouchesDistance = 0,
+      endTouchesDistance = 0,
+      pinchZoom = 1,
+      pinchDistance = 0,
+      pinchDirection = 0,
+      maximumsMap = null;
+
+
+
+    //jQuery wrapped element for this instance
+    var $element = $(element);
+
+    //Current phase of th touch cycle
+    var phase = "start";
+
+    // the current number of fingers being used.
+    var fingerCount = 0;
+
+    //track mouse points / delta
+    var fingerData = {};
+
+    //track times
+    var startTime = 0,
+      endTime = 0,
+      previousTouchEndTime = 0,
+      fingerCountAtRelease = 0,
+      doubleTapStartTime = 0;
+
+    //Timeouts
+    var singleTapTimeout = null,
+      holdTimeout = null;
+
+    // Add gestures to all swipable areas if supported
+    try {
+      $element.bind(START_EV, touchStart);
+      $element.bind(CANCEL_EV, touchCancel);
+    } catch (e) {
+      $.error('events not supported ' + START_EV + ',' + CANCEL_EV + ' on jQuery.swipe');
+    }
+
+    //
+    //Public methods
+    //
+
+    /**
+     * re-enables the swipe plugin with the previous configuration
+     * @function
+     * @name $.fn.swipe#enable
+     * @return {DOMNode} The Dom element that was registered with TouchSwipe
+     * @example $("#element").swipe("enable");
+     */
+    this.enable = function() {
+      //Incase we are already enabled, clean up...
+      this.disable();
+      $element.bind(START_EV, touchStart);
+      $element.bind(CANCEL_EV, touchCancel);
+      return $element;
+    };
+
+    /**
+     * disables the swipe plugin
+     * @function
+     * @name $.fn.swipe#disable
+     * @return {DOMNode} The Dom element that is now registered with TouchSwipe
+     * @example $("#element").swipe("disable");
+     */
+    this.disable = function() {
+      removeListeners();
+      return $element;
+    };
+
+    /**
+     * Destroy the swipe plugin completely. To use any swipe methods, you must re initialise the plugin.
+     * @function
+     * @name $.fn.swipe#destroy
+     * @example $("#element").swipe("destroy");
+     */
+    this.destroy = function() {
+      removeListeners();
+      $element.data(PLUGIN_NS, null);
+      $element = null;
+    };
+
+
+    /**
+     * Allows run time updating of the swipe configuration options.
+     * @function
+     * @name $.fn.swipe#option
+     * @param {String} property The option property to get or set, or a has of multiple options to set
+     * @param {Object} [value] The value to set the property to
+     * @return {Object} If only a property name is passed, then that property value is returned. If nothing is passed the current options hash is returned.
+     * @example $("#element").swipe("option", "threshold"); // return the threshold
+     * @example $("#element").swipe("option", "threshold", 100); // set the threshold after init
+     * @example $("#element").swipe("option", {threshold:100, fingers:3} ); // set multiple properties after init
+     * @example $("#element").swipe({threshold:100, fingers:3} ); // set multiple properties after init - the "option" method is optional!
+     * @example $("#element").swipe("option"); // Return the current options hash
+     * @see $.fn.swipe.defaults
+     *
+     */
+    this.option = function(property, value) {
+
+      if (typeof property === 'object') {
+        options = $.extend(options, property);
+      } else if (options[property] !== undefined) {
+        if (value === undefined) {
+          return options[property];
+        } else {
+          options[property] = value;
+        }
+      } else if (!property) {
+        return options;
+      } else {
+        $.error('Option ' + property + ' does not exist on jQuery.swipe.options');
+      }
+
+      return null;
+    }
+
+
+
+    //
+    // Private methods
+    //
+
+    //
+    // EVENTS
+    //
+    /**
+     * Event handler for a touch start event.
+     * Stops the default click event from triggering and stores where we touched
+     * @inner
+     * @param {object} jqEvent The normalised jQuery event object.
+     */
+    function touchStart(jqEvent) {
+
+      //If we already in a touch event (a finger already in use) then ignore subsequent ones..
+      if (getTouchInProgress()) {
+        return;
+      }
+
+      //Check if this element matches any in the excluded elements selectors,  or its parent is excluded, if so, DON'T swipe
+      if ($(jqEvent.target).closest(options.excludedElements, $element).length > 0) {
+        return;
+      }
+
+      //As we use Jquery bind for events, we need to target the original event object
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent;
+
+
+      //If we have a pointer event, whoes type is 'mouse' and we have said NO mouse events, then dont do anything.
+      if(event.pointerType && event.pointerType=="mouse" && options.fallbackToMouseEvents==false) {
+        return;
+      };
+
+      var ret,
+        touches = event.touches,
+        evt = touches ? touches[0] : event;
+
+      phase = PHASE_START;
+
+      //If we support touches, get the finger count
+      if (touches) {
+        // get the total number of fingers touching the screen
+        fingerCount = touches.length;
+      }
+      //Else this is the desktop, so stop the browser from dragging content
+      else if (options.preventDefaultEvents !== false) {
+        jqEvent.preventDefault(); //call this on jq event so we are cross browser
+      }
+
+      //clear vars..
+      distance = 0;
+      direction = null;
+      currentDirection=null;
+      pinchDirection = null;
+      duration = 0;
+      startTouchesDistance = 0;
+      endTouchesDistance = 0;
+      pinchZoom = 1;
+      pinchDistance = 0;
+      maximumsMap = createMaximumsData();
+      cancelMultiFingerRelease();
+
+      //Create the default finger data
+      createFingerData(0, evt);
+
+      // check the number of fingers is what we are looking for, or we are capturing pinches
+      if (!touches || (fingerCount === options.fingers || options.fingers === ALL_FINGERS) || hasPinches()) {
+        // get the coordinates of the touch
+        startTime = getTimeStamp();
+
+        if (fingerCount == 2) {
+          //Keep track of the initial pinch distance, so we can calculate the diff later
+          //Store second finger data as start
+          createFingerData(1, touches[1]);
+          startTouchesDistance = endTouchesDistance = calculateTouchesDistance(fingerData[0].start, fingerData[1].start);
+        }
+
+        if (options.swipeStatus || options.pinchStatus) {
+          ret = triggerHandler(event, phase);
+        }
+      } else {
+        //A touch with more or less than the fingers we are looking for, so cancel
+        ret = false;
+      }
+
+      //If we have a return value from the users handler, then return and cancel
+      if (ret === false) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+        return ret;
+      } else {
+        if (options.hold) {
+          holdTimeout = setTimeout($.proxy(function() {
+            //Trigger the event
+            $element.trigger('hold', [event.target]);
+            //Fire the callback
+            if (options.hold) {
+              ret = options.hold.call($element, event, event.target);
+            }
+          }, this), options.longTapThreshold);
+        }
+
+        setTouchInProgress(true);
+      }
+
+      return null;
+    };
+
+
+
+    /**
+     * Event handler for a touch move event.
+     * If we change fingers during move, then cancel the event
+     * @inner
+     * @param {object} jqEvent The normalised jQuery event object.
+     */
+    function touchMove(jqEvent) {
+
+      //As we use Jquery bind for events, we need to target the original event object
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent;
+
+      //If we are ending, cancelling, or within the threshold of 2 fingers being released, don't track anything..
+      if (phase === PHASE_END || phase === PHASE_CANCEL || inMultiFingerRelease())
+        return;
+
+      var ret,
+        touches = event.touches,
+        evt = touches ? touches[0] : event;
+
+
+      //Update the  finger data
+      var currentFinger = updateFingerData(evt);
+      endTime = getTimeStamp();
+
+      if (touches) {
+        fingerCount = touches.length;
+      }
+
+      if (options.hold) {
+        clearTimeout(holdTimeout);
+      }
+
+      phase = PHASE_MOVE;
+
+      //If we have 2 fingers get Touches distance as well
+      if (fingerCount == 2) {
+
+        //Keep track of the initial pinch distance, so we can calculate the diff later
+        //We do this here as well as the start event, in case they start with 1 finger, and the press 2 fingers
+        if (startTouchesDistance == 0) {
+          //Create second finger if this is the first time...
+          createFingerData(1, touches[1]);
+
+          startTouchesDistance = endTouchesDistance = calculateTouchesDistance(fingerData[0].start, fingerData[1].start);
+        } else {
+          //Else just update the second finger
+          updateFingerData(touches[1]);
+
+          endTouchesDistance = calculateTouchesDistance(fingerData[0].end, fingerData[1].end);
+          pinchDirection = calculatePinchDirection(fingerData[0].end, fingerData[1].end);
+        }
+
+        pinchZoom = calculatePinchZoom(startTouchesDistance, endTouchesDistance);
+        pinchDistance = Math.abs(startTouchesDistance - endTouchesDistance);
+      }
+
+      if ((fingerCount === options.fingers || options.fingers === ALL_FINGERS) || !touches || hasPinches()) {
+
+        //The overall direction of the swipe. From start to now.
+        direction = calculateDirection(currentFinger.start, currentFinger.end);
+
+        //The immediate direction of the swipe, direction between the last movement and this one.
+        currentDirection = calculateDirection(currentFinger.last, currentFinger.end);
+
+        //Check if we need to prevent default event (page scroll / pinch zoom) or not
+        validateDefaultEvent(jqEvent, currentDirection);
+
+        //Distance and duration are all off the main finger
+        distance = calculateDistance(currentFinger.start, currentFinger.end);
+        duration = calculateDuration();
+
+        //Cache the maximum distance we made in this direction
+        setMaxDistance(direction, distance);
+
+        //Trigger status handler
+        ret = triggerHandler(event, phase);
+
+
+        //If we trigger end events when threshold are met, or trigger events when touch leaves element
+        if (!options.triggerOnTouchEnd || options.triggerOnTouchLeave) {
+
+          var inBounds = true;
+
+          //If checking if we leave the element, run the bounds check (we can use touchleave as its not supported on webkit)
+          if (options.triggerOnTouchLeave) {
+            var bounds = getbounds(this);
+            inBounds = isInBounds(currentFinger.end, bounds);
+          }
+
+          //Trigger end handles as we swipe if thresholds met or if we have left the element if the user has asked to check these..
+          if (!options.triggerOnTouchEnd && inBounds) {
+            phase = getNextPhase(PHASE_MOVE);
+          }
+          //We end if out of bounds here, so set current phase to END, and check if its modified
+          else if (options.triggerOnTouchLeave && !inBounds) {
+            phase = getNextPhase(PHASE_END);
+          }
+
+          if (phase == PHASE_CANCEL || phase == PHASE_END) {
+            triggerHandler(event, phase);
+          }
+        }
+      } else {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      }
+
+      if (ret === false) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      }
+    }
+
+
+
+
+    /**
+     * Event handler for a touch end event.
+     * Calculate the direction and trigger events
+     * @inner
+     * @param {object} jqEvent The normalised jQuery event object.
+     */
+    function touchEnd(jqEvent) {
+      //As we use Jquery bind for events, we need to target the original event object
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent,
+        touches = event.touches;
+
+      //If we are still in a touch with the device wait a fraction and see if the other finger comes up
+      //if it does within the threshold, then we treat it as a multi release, not a single release and end the touch / swipe
+      if (touches) {
+        if (touches.length && !inMultiFingerRelease()) {
+          startMultiFingerRelease(event);
+          return true;
+        } else if (touches.length && inMultiFingerRelease()) {
+          return true;
+        }
+      }
+
+      //If a previous finger has been released, check how long ago, if within the threshold, then assume it was a multifinger release.
+      //This is used to allow 2 fingers to release fractionally after each other, whilst maintaining the event as containing 2 fingers, not 1
+      if (inMultiFingerRelease()) {
+        fingerCount = fingerCountAtRelease;
+      }
+
+      //Set end of swipe
+      endTime = getTimeStamp();
+
+      //Get duration incase move was never fired
+      duration = calculateDuration();
+
+      //If we trigger handlers at end of swipe OR, we trigger during, but they didnt trigger and we are still in the move phase
+      if (didSwipeBackToCancel() || !validateSwipeDistance()) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      } else if (options.triggerOnTouchEnd || (options.triggerOnTouchEnd === false && phase === PHASE_MOVE)) {
+        //call this on jq event so we are cross browser
+        if (options.preventDefaultEvents !== false && jqEvent.cancelable !== false) {
+          jqEvent.preventDefault();
+        }
+        phase = PHASE_END;
+        triggerHandler(event, phase);
+      }
+      //Special cases - A tap should always fire on touch end regardless,
+      //So here we manually trigger the tap end handler by itself
+      //We dont run trigger handler as it will re-trigger events that may have fired already
+      else if (!options.triggerOnTouchEnd && hasTap()) {
+        //Trigger the pinch events...
+        phase = PHASE_END;
+        triggerHandlerForGesture(event, phase, TAP);
+      } else if (phase === PHASE_MOVE) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      }
+
+      setTouchInProgress(false);
+
+      return null;
+    }
+
+
+
+    /**
+     * Event handler for a touch cancel event.
+     * Clears current vars
+     * @inner
+     */
+    function touchCancel() {
+      // reset the variables back to default values
+      fingerCount = 0;
+      endTime = 0;
+      startTime = 0;
+      startTouchesDistance = 0;
+      endTouchesDistance = 0;
+      pinchZoom = 1;
+
+      //If we were in progress of tracking a possible multi touch end, then re set it.
+      cancelMultiFingerRelease();
+
+      setTouchInProgress(false);
+    }
+
+
+    /**
+     * Event handler for a touch leave event.
+     * This is only triggered on desktops, in touch we work this out manually
+     * as the touchleave event is not supported in webkit
+     * @inner
+     */
+    function touchLeave(jqEvent) {
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent;
+
+      //If we have the trigger on leave property set....
+      if (options.triggerOnTouchLeave) {
+        phase = getNextPhase(PHASE_END);
+        triggerHandler(event, phase);
+      }
+    }
+
+    /**
+     * Removes all listeners that were associated with the plugin
+     * @inner
+     */
+    function removeListeners() {
+      $element.unbind(START_EV, touchStart);
+      $element.unbind(CANCEL_EV, touchCancel);
+      $element.unbind(MOVE_EV, touchMove);
+      $element.unbind(END_EV, touchEnd);
+
+      //we only have leave events on desktop, we manually calculate leave on touch as its not supported in webkit
+      if (LEAVE_EV) {
+        $element.unbind(LEAVE_EV, touchLeave);
+      }
+
+      setTouchInProgress(false);
+    }
+
+
+    /**
+     * Checks if the time and distance thresholds have been met, and if so then the appropriate handlers are fired.
+     */
+    function getNextPhase(currentPhase) {
+
+      var nextPhase = currentPhase;
+
+      // Ensure we have valid swipe (under time and over distance  and check if we are out of bound...)
+      var validTime = validateSwipeTime();
+      var validDistance = validateSwipeDistance();
+      var didCancel = didSwipeBackToCancel();
+
+      //If we have exceeded our time, then cancel
+      if (!validTime || didCancel) {
+        nextPhase = PHASE_CANCEL;
+      }
+      //Else if we are moving, and have reached distance then end
+      else if (validDistance && currentPhase == PHASE_MOVE && (!options.triggerOnTouchEnd || options.triggerOnTouchLeave)) {
+        nextPhase = PHASE_END;
+      }
+      //Else if we have ended by leaving and didn't reach distance, then cancel
+      else if (!validDistance && currentPhase == PHASE_END && options.triggerOnTouchLeave) {
+        nextPhase = PHASE_CANCEL;
+      }
+
+      return nextPhase;
+    }
+
+
+    /**
+     * Trigger the relevant event handler
+     * The handlers are passed the original event, the element that was swiped, and in the case of the catch all handler, the direction that was swiped, "left", "right", "up", or "down"
+     * @param {object} event the original event object
+     * @param {string} phase the phase of the swipe (start, end cancel etc) {@link $.fn.swipe.phases}
+     * @inner
+     */
+    function triggerHandler(event, phase) {
+
+
+
+      var ret,
+        touches = event.touches;
+
+      // SWIPE GESTURES
+      if (didSwipe() || hasSwipes()) {
+          ret = triggerHandlerForGesture(event, phase, SWIPE);
+      }
+
+      // PINCH GESTURES (if the above didn't cancel)
+      if ((didPinch() || hasPinches()) && ret !== false) {
+          ret = triggerHandlerForGesture(event, phase, PINCH);
+      }
+
+      // CLICK / TAP (if the above didn't cancel)
+      if (didDoubleTap() && ret !== false) {
+        //Trigger the tap events...
+        ret = triggerHandlerForGesture(event, phase, DOUBLE_TAP);
+      }
+
+      // CLICK / TAP (if the above didn't cancel)
+      else if (didLongTap() && ret !== false) {
+        //Trigger the tap events...
+        ret = triggerHandlerForGesture(event, phase, LONG_TAP);
+      }
+
+      // CLICK / TAP (if the above didn't cancel)
+      else if (didTap() && ret !== false) {
+        //Trigger the tap event..
+        ret = triggerHandlerForGesture(event, phase, TAP);
+      }
+
+
+
+      // If we are cancelling the gesture, then manually trigger the reset handler
+      if (phase === PHASE_CANCEL) {
+
+        touchCancel(event);
+      }
+
+
+
+
+      // If we are ending the gesture, then manually trigger the reset handler IF all fingers are off
+      if (phase === PHASE_END) {
+        //If we support touch, then check that all fingers are off before we cancel
+        if (touches) {
+          if (!touches.length) {
+            touchCancel(event);
+          }
+        } else {
+          touchCancel(event);
+        }
+      }
+
+      return ret;
+    }
+
+
+
+    /**
+     * Trigger the relevant event handler
+     * The handlers are passed the original event, the element that was swiped, and in the case of the catch all handler, the direction that was swiped, "left", "right", "up", or "down"
+     * @param {object} event the original event object
+     * @param {string} phase the phase of the swipe (start, end cancel etc) {@link $.fn.swipe.phases}
+     * @param {string} gesture the gesture to trigger a handler for : PINCH or SWIPE {@link $.fn.swipe.gestures}
+     * @return Boolean False, to indicate that the event should stop propagation, or void.
+     * @inner
+     */
+    function triggerHandlerForGesture(event, phase, gesture) {
+
+      var ret;
+
+      //SWIPES....
+      if (gesture == SWIPE) {
+        //Trigger status every time..
+        $element.trigger('swipeStatus', [phase, direction || null, distance || 0, duration || 0, fingerCount, fingerData, currentDirection]);
+
+        if (options.swipeStatus) {
+          ret = options.swipeStatus.call($element, event, phase, direction || null, distance || 0, duration || 0, fingerCount, fingerData, currentDirection);
+          //If the status cancels, then dont run the subsequent event handlers..
+          if (ret === false) return false;
+        }
+
+        if (phase == PHASE_END && validateSwipe()) {
+
+          //Cancel any taps that were in progress...
+          clearTimeout(singleTapTimeout);
+          clearTimeout(holdTimeout);
+
+          $element.trigger('swipe', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+          if (options.swipe) {
+            ret = options.swipe.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+            //If the status cancels, then dont run the subsequent event handlers..
+            if (ret === false) return false;
+          }
+
+          //trigger direction specific event handlers
+          switch (direction) {
+            case LEFT:
+              $element.trigger('swipeLeft', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeLeft) {
+                ret = options.swipeLeft.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+
+            case RIGHT:
+              $element.trigger('swipeRight', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeRight) {
+                ret = options.swipeRight.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+
+            case UP:
+              $element.trigger('swipeUp', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeUp) {
+                ret = options.swipeUp.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+
+            case DOWN:
+              $element.trigger('swipeDown', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeDown) {
+                ret = options.swipeDown.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+          }
+        }
+      }
+
+
+      //PINCHES....
+      if (gesture == PINCH) {
+        $element.trigger('pinchStatus', [phase, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData]);
+
+        if (options.pinchStatus) {
+          ret = options.pinchStatus.call($element, event, phase, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData);
+          //If the status cancels, then dont run the subsequent event handlers..
+          if (ret === false) return false;
+        }
+
+        if (phase == PHASE_END && validatePinch()) {
+
+          switch (pinchDirection) {
+            case IN:
+              $element.trigger('pinchIn', [pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData]);
+
+              if (options.pinchIn) {
+                ret = options.pinchIn.call($element, event, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData);
+              }
+              break;
+
+            case OUT:
+              $element.trigger('pinchOut', [pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData]);
+
+              if (options.pinchOut) {
+                ret = options.pinchOut.call($element, event, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData);
+              }
+              break;
+          }
+        }
+      }
+
+      if (gesture == TAP) {
+        if (phase === PHASE_CANCEL || phase === PHASE_END) {
+
+          clearTimeout(singleTapTimeout);
+          clearTimeout(holdTimeout);
+
+          //If we are also looking for doubelTaps, wait incase this is one...
+          if (hasDoubleTap() && !inDoubleTap()) {
+            doubleTapStartTime = getTimeStamp();
+
+            //Now wait for the double tap timeout, and trigger this single tap
+            //if its not cancelled by a double tap
+            singleTapTimeout = setTimeout($.proxy(function() {
+              doubleTapStartTime = null;
+              $element.trigger('tap', [event.target]);
+
+              if (options.tap) {
+                ret = options.tap.call($element, event, event.target);
+              }
+            }, this), options.doubleTapThreshold);
+
+          } else {
+            doubleTapStartTime = null;
+            $element.trigger('tap', [event.target]);
+            if (options.tap) {
+              ret = options.tap.call($element, event, event.target);
+            }
+          }
+        }
+      } else if (gesture == DOUBLE_TAP) {
+        if (phase === PHASE_CANCEL || phase === PHASE_END) {
+          clearTimeout(singleTapTimeout);
+          clearTimeout(holdTimeout);
+          doubleTapStartTime = null;
+          $element.trigger('doubletap', [event.target]);
+
+          if (options.doubleTap) {
+            ret = options.doubleTap.call($element, event, event.target);
+          }
+        }
+      } else if (gesture == LONG_TAP) {
+        if (phase === PHASE_CANCEL || phase === PHASE_END) {
+          clearTimeout(singleTapTimeout);
+          doubleTapStartTime = null;
+
+          $element.trigger('longtap', [event.target]);
+          if (options.longTap) {
+            ret = options.longTap.call($element, event, event.target);
+          }
+        }
+      }
+
+      return ret;
+    }
+
+
+    //
+    // GESTURE VALIDATION
+    //
+
+    /**
+     * Checks the user has swipe far enough
+     * @return Boolean if <code>threshold</code> has been set, return true if the threshold was met, else false.
+     * If no threshold was set, then we return true.
+     * @inner
+     */
+    function validateSwipeDistance() {
+      var valid = true;
+      //If we made it past the min swipe distance..
+      if (options.threshold !== null) {
+        valid = distance >= options.threshold;
+      }
+
+      return valid;
+    }
+
+    /**
+     * Checks the user has swiped back to cancel.
+     * @return Boolean if <code>cancelThreshold</code> has been set, return true if the cancelThreshold was met, else false.
+     * If no cancelThreshold was set, then we return true.
+     * @inner
+     */
+    function didSwipeBackToCancel() {
+      var cancelled = false;
+      if (options.cancelThreshold !== null && direction !== null) {
+        cancelled = (getMaxDistance(direction) - distance) >= options.cancelThreshold;
+      }
+
+      return cancelled;
+    }
+
+    /**
+     * Checks the user has pinched far enough
+     * @return Boolean if <code>pinchThreshold</code> has been set, return true if the threshold was met, else false.
+     * If no threshold was set, then we return true.
+     * @inner
+     */
+    function validatePinchDistance() {
+      if (options.pinchThreshold !== null) {
+        return pinchDistance >= options.pinchThreshold;
+      }
+      return true;
+    }
+
+    /**
+     * Checks that the time taken to swipe meets the minimum / maximum requirements
+     * @return Boolean
+     * @inner
+     */
+    function validateSwipeTime() {
+      var result;
+      //If no time set, then return true
+      if (options.maxTimeThreshold) {
+        if (duration >= options.maxTimeThreshold) {
+          result = false;
+        } else {
+          result = true;
+        }
+      } else {
+        result = true;
+      }
+
+      return result;
+    }
+
+
+    /**
+     * Checks direction of the swipe and the value allowPageScroll to see if we should allow or prevent the default behaviour from occurring.
+     * This will essentially allow page scrolling or not when the user is swiping on a touchSwipe object.
+     * @param {object} jqEvent The normalised jQuery representation of the event object.
+     * @param {string} direction The direction of the event. See {@link $.fn.swipe.directions}
+     * @see $.fn.swipe.directions
+     * @inner
+     */
+    function validateDefaultEvent(jqEvent, direction) {
+
+      //If the option is set, allways allow the event to bubble up (let user handle weirdness)
+      if (options.preventDefaultEvents === false) {
+        return;
+      }
+
+      if (options.allowPageScroll === NONE) {
+        jqEvent.preventDefault();
+      } else {
+        var auto = options.allowPageScroll === AUTO;
+
+        switch (direction) {
+          case LEFT:
+            if ((options.swipeLeft && auto) || (!auto && options.allowPageScroll != HORIZONTAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case RIGHT:
+            if ((options.swipeRight && auto) || (!auto && options.allowPageScroll != HORIZONTAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case UP:
+            if ((options.swipeUp && auto) || (!auto && options.allowPageScroll != VERTICAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case DOWN:
+            if ((options.swipeDown && auto) || (!auto && options.allowPageScroll != VERTICAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case NONE:
+
+            break;
+        }
+      }
+    }
+
+
+    // PINCHES
+    /**
+     * Returns true of the current pinch meets the thresholds
+     * @return Boolean
+     * @inner
+     */
+    function validatePinch() {
+      var hasCorrectFingerCount = validateFingers();
+      var hasEndPoint = validateEndPoint();
+      var hasCorrectDistance = validatePinchDistance();
+      return hasCorrectFingerCount && hasEndPoint && hasCorrectDistance;
+
+    }
+
+    /**
+     * Returns true if any Pinch events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasPinches() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.pinchStatus || options.pinchIn || options.pinchOut);
+    }
+
+    /**
+     * Returns true if we are detecting pinches, and have one
+     * @return Boolean
+     * @inner
+     */
+    function didPinch() {
+      //Enure we dont return 0 or null for false values
+      return !!(validatePinch() && hasPinches());
+    }
+
+
+
+
+    // SWIPES
+    /**
+     * Returns true if the current swipe meets the thresholds
+     * @return Boolean
+     * @inner
+     */
+    function validateSwipe() {
+      //Check validity of swipe
+      var hasValidTime = validateSwipeTime();
+      var hasValidDistance = validateSwipeDistance();
+      var hasCorrectFingerCount = validateFingers();
+      var hasEndPoint = validateEndPoint();
+      var didCancel = didSwipeBackToCancel();
+
+      // if the user swiped more than the minimum length, perform the appropriate action
+      // hasValidDistance is null when no distance is set
+      var valid = !didCancel && hasEndPoint && hasCorrectFingerCount && hasValidDistance && hasValidTime;
+
+      return valid;
+    }
+
+    /**
+     * Returns true if any Swipe events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasSwipes() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.swipe || options.swipeStatus || options.swipeLeft || options.swipeRight || options.swipeUp || options.swipeDown);
+    }
+
+
+    /**
+     * Returns true if we are detecting swipes and have one
+     * @return Boolean
+     * @inner
+     */
+    function didSwipe() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateSwipe() && hasSwipes());
+    }
+
+    /**
+     * Returns true if we have matched the number of fingers we are looking for
+     * @return Boolean
+     * @inner
+     */
+    function validateFingers() {
+      //The number of fingers we want were matched, or on desktop we ignore
+      return ((fingerCount === options.fingers || options.fingers === ALL_FINGERS) || !SUPPORTS_TOUCH);
+    }
+
+    /**
+     * Returns true if we have an end point for the swipe
+     * @return Boolean
+     * @inner
+     */
+    function validateEndPoint() {
+      //We have an end value for the finger
+      return fingerData[0].end.x !== 0;
+    }
+
+    // TAP / CLICK
+    /**
+     * Returns true if a click / tap events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.tap);
+    }
+
+    /**
+     * Returns true if a double tap events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasDoubleTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.doubleTap);
+    }
+
+    /**
+     * Returns true if any long tap events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasLongTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.longTap);
+    }
+
+    /**
+     * Returns true if we could be in the process of a double tap (one tap has occurred, we are listening for double taps, and the threshold hasn't past.
+     * @return Boolean
+     * @inner
+     */
+    function validateDoubleTap() {
+      if (doubleTapStartTime == null) {
+        return false;
+      }
+      var now = getTimeStamp();
+      return (hasDoubleTap() && ((now - doubleTapStartTime) <= options.doubleTapThreshold));
+    }
+
+    /**
+     * Returns true if we could be in the process of a double tap (one tap has occurred, we are listening for double taps, and the threshold hasn't past.
+     * @return Boolean
+     * @inner
+     */
+    function inDoubleTap() {
+      return validateDoubleTap();
+    }
+
+
+    /**
+     * Returns true if we have a valid tap
+     * @return Boolean
+     * @inner
+     */
+    function validateTap() {
+      return ((fingerCount === 1 || !SUPPORTS_TOUCH) && (isNaN(distance) || distance < options.threshold));
+    }
+
+    /**
+     * Returns true if we have a valid long tap
+     * @return Boolean
+     * @inner
+     */
+    function validateLongTap() {
+      //slight threshold on moving finger
+      return ((duration > options.longTapThreshold) && (distance < DOUBLE_TAP_THRESHOLD));
+    }
+
+    /**
+     * Returns true if we are detecting taps and have one
+     * @return Boolean
+     * @inner
+     */
+    function didTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateTap() && hasTap());
+    }
+
+
+    /**
+     * Returns true if we are detecting double taps and have one
+     * @return Boolean
+     * @inner
+     */
+    function didDoubleTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateDoubleTap() && hasDoubleTap());
+    }
+
+    /**
+     * Returns true if we are detecting long taps and have one
+     * @return Boolean
+     * @inner
+     */
+    function didLongTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateLongTap() && hasLongTap());
+    }
+
+
+
+
+    // MULTI FINGER TOUCH
+    /**
+     * Starts tracking the time between 2 finger releases, and keeps track of how many fingers we initially had up
+     * @inner
+     */
+    function startMultiFingerRelease(event) {
+      previousTouchEndTime = getTimeStamp();
+      fingerCountAtRelease = event.touches.length + 1;
+    }
+
+    /**
+     * Cancels the tracking of time between 2 finger releases, and resets counters
+     * @inner
+     */
+    function cancelMultiFingerRelease() {
+      previousTouchEndTime = 0;
+      fingerCountAtRelease = 0;
+    }
+
+    /**
+     * Checks if we are in the threshold between 2 fingers being released
+     * @return Boolean
+     * @inner
+     */
+    function inMultiFingerRelease() {
+
+      var withinThreshold = false;
+
+      if (previousTouchEndTime) {
+        var diff = getTimeStamp() - previousTouchEndTime
+        if (diff <= options.fingerReleaseThreshold) {
+          withinThreshold = true;
+        }
+      }
+
+      return withinThreshold;
+    }
+
+
+    /**
+     * gets a data flag to indicate that a touch is in progress
+     * @return Boolean
+     * @inner
+     */
+    function getTouchInProgress() {
+      //strict equality to ensure only true and false are returned
+      return !!($element.data(PLUGIN_NS + '_intouch') === true);
+    }
+
+    /**
+     * Sets a data flag to indicate that a touch is in progress
+     * @param {boolean} val The value to set the property to
+     * @inner
+     */
+    function setTouchInProgress(val) {
+
+      //If destroy is called in an event handler, we have no el, and we have already cleaned up, so return.
+      if(!$element) { return; }
+
+      //Add or remove event listeners depending on touch status
+      if (val === true) {
+        $element.bind(MOVE_EV, touchMove);
+        $element.bind(END_EV, touchEnd);
+
+        //we only have leave events on desktop, we manually calcuate leave on touch as its not supported in webkit
+        if (LEAVE_EV) {
+          $element.bind(LEAVE_EV, touchLeave);
+        }
+      } else {
+
+        $element.unbind(MOVE_EV, touchMove, false);
+        $element.unbind(END_EV, touchEnd, false);
+
+        //we only have leave events on desktop, we manually calcuate leave on touch as its not supported in webkit
+        if (LEAVE_EV) {
+          $element.unbind(LEAVE_EV, touchLeave, false);
+        }
+      }
+
+
+      //strict equality to ensure only true and false can update the value
+      $element.data(PLUGIN_NS + '_intouch', val === true);
+    }
+
+
+    /**
+     * Creates the finger data for the touch/finger in the event object.
+     * @param {int} id The id to store the finger data under (usually the order the fingers were pressed)
+     * @param {object} evt The event object containing finger data
+     * @return finger data object
+     * @inner
+     */
+    function createFingerData(id, evt) {
+      var f = {
+        start: {
+          x: 0,
+          y: 0
+        },
+        last: {
+          x: 0,
+          y: 0
+        },
+        end: {
+          x: 0,
+          y: 0
+        }
+      };
+      f.start.x = f.last.x = f.end.x = evt.pageX || evt.clientX;
+      f.start.y = f.last.y = f.end.y = evt.pageY || evt.clientY;
+      fingerData[id] = f;
+      return f;
+    }
+
+    /**
+     * Updates the finger data for a particular event object
+     * @param {object} evt The event object containing the touch/finger data to upadte
+     * @return a finger data object.
+     * @inner
+     */
+    function updateFingerData(evt) {
+      var id = evt.identifier !== undefined ? evt.identifier : 0;
+      var f = getFingerData(id);
+
+      if (f === null) {
+        f = createFingerData(id, evt);
+      }
+
+      f.last.x = f.end.x;
+      f.last.y = f.end.y;
+
+      f.end.x = evt.pageX || evt.clientX;
+      f.end.y = evt.pageY || evt.clientY;
+
+      return f;
+    }
+
+    /**
+     * Returns a finger data object by its event ID.
+     * Each touch event has an identifier property, which is used
+     * to track repeat touches
+     * @param {int} id The unique id of the finger in the sequence of touch events.
+     * @return a finger data object.
+     * @inner
+     */
+    function getFingerData(id) {
+      return fingerData[id] || null;
+    }
+
+
+    /**
+     * Sets the maximum distance swiped in the given direction.
+     * If the new value is lower than the current value, the max value is not changed.
+     * @param {string}  direction The direction of the swipe
+     * @param {int}  distance The distance of the swipe
+     * @inner
+     */
+    function setMaxDistance(direction, distance) {
+      if(direction==NONE) return;
+      distance = Math.max(distance, getMaxDistance(direction));
+      maximumsMap[direction].distance = distance;
+    }
+
+    /**
+     * gets the maximum distance swiped in the given direction.
+     * @param {string}  direction The direction of the swipe
+     * @return int  The distance of the swipe
+     * @inner
+     */
+    function getMaxDistance(direction) {
+      if (maximumsMap[direction]) return maximumsMap[direction].distance;
+      return undefined;
+    }
+
+    /**
+     * Creats a map of directions to maximum swiped values.
+     * @return Object A dictionary of maximum values, indexed by direction.
+     * @inner
+     */
+    function createMaximumsData() {
+      var maxData = {};
+      maxData[LEFT] = createMaximumVO(LEFT);
+      maxData[RIGHT] = createMaximumVO(RIGHT);
+      maxData[UP] = createMaximumVO(UP);
+      maxData[DOWN] = createMaximumVO(DOWN);
+
+      return maxData;
+    }
+
+    /**
+     * Creates a map maximum swiped values for a given swipe direction
+     * @param {string} The direction that these values will be associated with
+     * @return Object Maximum values
+     * @inner
+     */
+    function createMaximumVO(dir) {
+      return {
+        direction: dir,
+        distance: 0
+      }
+    }
+
+
+    //
+    // MATHS / UTILS
+    //
+
+    /**
+     * Calculate the duration of the swipe
+     * @return int
+     * @inner
+     */
+    function calculateDuration() {
+      return endTime - startTime;
+    }
+
+    /**
+     * Calculate the distance between 2 touches (pinch)
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return int;
+     * @inner
+     */
+    function calculateTouchesDistance(startPoint, endPoint) {
+      var diffX = Math.abs(startPoint.x - endPoint.x);
+      var diffY = Math.abs(startPoint.y - endPoint.y);
+
+      return Math.round(Math.sqrt(diffX * diffX + diffY * diffY));
+    }
+
+    /**
+     * Calculate the zoom factor between the start and end distances
+     * @param {int} startDistance Distance (between 2 fingers) the user started pinching at
+     * @param {int} endDistance Distance (between 2 fingers) the user ended pinching at
+     * @return float The zoom value from 0 to 1.
+     * @inner
+     */
+    function calculatePinchZoom(startDistance, endDistance) {
+      var percent = (endDistance / startDistance) * 1;
+      return percent.toFixed(2);
+    }
+
+
+    /**
+     * Returns the pinch direction, either IN or OUT for the given points
+     * @return string Either {@link $.fn.swipe.directions.IN} or {@link $.fn.swipe.directions.OUT}
+     * @see $.fn.swipe.directions
+     * @inner
+     */
+    function calculatePinchDirection() {
+      if (pinchZoom < 1) {
+        return OUT;
+      } else {
+        return IN;
+      }
+    }
+
+
+    /**
+     * Calculate the length / distance of the swipe
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return int
+     * @inner
+     */
+    function calculateDistance(startPoint, endPoint) {
+      return Math.round(Math.sqrt(Math.pow(endPoint.x - startPoint.x, 2) + Math.pow(endPoint.y - startPoint.y, 2)));
+    }
+
+    /**
+     * Calculate the angle of the swipe
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return int
+     * @inner
+     */
+    function calculateAngle(startPoint, endPoint) {
+      var x = startPoint.x - endPoint.x;
+      var y = endPoint.y - startPoint.y;
+      var r = Math.atan2(y, x); //radians
+      var angle = Math.round(r * 180 / Math.PI); //degrees
+
+      //ensure value is positive
+      if (angle < 0) {
+        angle = 360 - Math.abs(angle);
+      }
+
+      return angle;
+    }
+
+    /**
+     * Calculate the direction of the swipe
+     * This will also call calculateAngle to get the latest angle of swipe
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return string Either {@link $.fn.swipe.directions.LEFT} / {@link $.fn.swipe.directions.RIGHT} / {@link $.fn.swipe.directions.DOWN} / {@link $.fn.swipe.directions.UP}
+     * @see $.fn.swipe.directions
+     * @inner
+     */
+    function calculateDirection(startPoint, endPoint) {
+
+      if( comparePoints(startPoint, endPoint) ) {
+        return NONE;
+      }
+
+      var angle = calculateAngle(startPoint, endPoint);
+
+      if ((angle <= 45) && (angle >= 0)) {
+        return LEFT;
+      } else if ((angle <= 360) && (angle >= 315)) {
+        return LEFT;
+      } else if ((angle >= 135) && (angle <= 225)) {
+        return RIGHT;
+      } else if ((angle > 45) && (angle < 135)) {
+        return DOWN;
+      } else {
+        return UP;
+      }
+    }
+
+
+    /**
+     * Returns a MS time stamp of the current time
+     * @return int
+     * @inner
+     */
+    function getTimeStamp() {
+      var now = new Date();
+      return now.getTime();
+    }
+
+
+
+    /**
+     * Returns a bounds object with left, right, top and bottom properties for the element specified.
+     * @param {DomNode} The DOM node to get the bounds for.
+     */
+    function getbounds(el) {
+      el = $(el);
+      var offset = el.offset();
+
+      var bounds = {
+        left: offset.left,
+        right: offset.left + el.outerWidth(),
+        top: offset.top,
+        bottom: offset.top + el.outerHeight()
+      }
+
+      return bounds;
+    }
+
+
+    /**
+     * Checks if the point object is in the bounds object.
+     * @param {object} point A point object.
+     * @param {int} point.x The x value of the point.
+     * @param {int} point.y The x value of the point.
+     * @param {object} bounds The bounds object to test
+     * @param {int} bounds.left The leftmost value
+     * @param {int} bounds.right The righttmost value
+     * @param {int} bounds.top The topmost value
+     * @param {int} bounds.bottom The bottommost value
+     */
+    function isInBounds(point, bounds) {
+      return (point.x > bounds.left && point.x < bounds.right && point.y > bounds.top && point.y < bounds.bottom);
+    };
+
+    /**
+     * Checks if the two points are equal
+     * @param {object} point A point object.
+     * @param {object} point B point object.
+     * @return true of the points match
+     */
+    function comparePoints(pointA, pointB) {
+      return (pointA.x == pointB.x && pointA.y == pointB.y);
+    }
+
+
+  }
+
+
+
+
+  /**
+   * A catch all handler that is triggered for all swipe directions.
+   * @name $.fn.swipe#swipe
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+
+
+
+  /**
+   * A handler that is triggered for "left" swipes.
+   * @name $.fn.swipe#swipeLeft
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler that is triggered for "right" swipes.
+   * @name $.fn.swipe#swipeRight
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler that is triggered for "up" swipes.
+   * @name $.fn.swipe#swipeUp
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler that is triggered for "down" swipes.
+   * @name $.fn.swipe#swipeDown
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler triggered for every phase of the swipe. This handler is constantly fired for the duration of the pinch.
+   * This is triggered regardless of swipe thresholds.
+   * @name $.fn.swipe#swipeStatus
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {string} phase The phase of the swipe event. See {@link $.fn.swipe.phases}
+   * @param {string} direction The direction the user swiped in. This is null if the user has yet to move. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped. This is 0 if the user has yet to move.
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler triggered for pinch in events.
+   * @name $.fn.swipe#pinchIn
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user pinched in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user pinched
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {int} zoom The zoom/scale level the user pinched too, 0-1.
+   * @param {object} fingerData The coordinates of fingers in event
+   */
+
+  /**
+   * A handler triggered for pinch out events.
+   * @name $.fn.swipe#pinchOut
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user pinched in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user pinched
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {int} zoom The zoom/scale level the user pinched too, 0-1.
+   * @param {object} fingerData The coordinates of fingers in event
+   */
+
+  /**
+   * A handler triggered for all pinch events. This handler is constantly fired for the duration of the pinch. This is triggered regardless of thresholds.
+   * @name $.fn.swipe#pinchStatus
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user pinched in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user pinched
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {int} zoom The zoom/scale level the user pinched too, 0-1.
+   * @param {object} fingerData The coordinates of fingers in event
+   */
+
+  /**
+   * A click handler triggered when a user simply clicks, rather than swipes on an element.
+   * This is deprecated since version 1.6.2, any assignment to click will be assigned to the tap handler.
+   * You cannot use <code>on</code> to bind to this event as the default jQ <code>click</code> event will be triggered.
+   * Use the <code>tap</code> event instead.
+   * @name $.fn.swipe#click
+   * @event
+   * @deprecated since version 1.6.2, please use {@link $.fn.swipe#tap} instead
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A click / tap handler triggered when a user simply clicks or taps, rather than swipes on an element.
+   * @name $.fn.swipe#tap
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A double tap handler triggered when a user double clicks or taps on an element.
+   * You can set the time delay for a double tap with the {@link $.fn.swipe.defaults#doubleTapThreshold} property.
+   * Note: If you set both <code>doubleTap</code> and <code>tap</code> handlers, the <code>tap</code> event will be delayed by the <code>doubleTapThreshold</code>
+   * as the script needs to check if its a double tap.
+   * @name $.fn.swipe#doubleTap
+   * @see  $.fn.swipe.defaults#doubleTapThreshold
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A long tap handler triggered once a tap has been release if the tap was longer than the longTapThreshold.
+   * You can set the time delay for a long tap with the {@link $.fn.swipe.defaults#longTapThreshold} property.
+   * @name $.fn.swipe#longTap
+   * @see  $.fn.swipe.defaults#longTapThreshold
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A hold tap handler triggered as soon as the longTapThreshold is reached
+   * You can set the time delay for a long tap with the {@link $.fn.swipe.defaults#longTapThreshold} property.
+   * @name $.fn.swipe#hold
+   * @see  $.fn.swipe.defaults#longTapThreshold
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+}));
+
+/*!
  * Bootstrap v4.0.0-alpha.6 (https://getbootstrap.com)
  * Copyright 2011-2017 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires jQuery. jQuery must be included before Bootstrap's JavaScript.");+function(t){var e=t.fn.jquery.split(" ")[0].split(".");if(e[0]<2&&e[1]<9||1==e[0]&&9==e[1]&&e[2]<1||e[0]>=4)throw new Error("Bootstrap's JavaScript requires at least jQuery v1.9.1 but less than v4.0.0")}(jQuery),+function(){function t(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function e(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}var i="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},o=function(){function t(t,e){for(var n=0;n<e.length;n++){var i=e[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,i.key,i)}}return function(e,n,i){return n&&t(e.prototype,n),i&&t(e,i),e}}(),r=function(t){function e(t){return{}.toString.call(t).match(/\s([a-zA-Z]+)/)[1].toLowerCase()}function n(t){return(t[0]||t).nodeType}function i(){return{bindType:a.end,delegateType:a.end,handle:function(e){if(t(e.target).is(this))return e.handleObj.handler.apply(this,arguments)}}}function o(){if(window.QUnit)return!1;var t=document.createElement("bootstrap");for(var e in h)if(void 0!==t.style[e])return{end:h[e]};return!1}function r(e){var n=this,i=!1;return t(this).one(c.TRANSITION_END,function(){i=!0}),setTimeout(function(){i||c.triggerTransitionEnd(n)},e),this}function s(){a=o(),t.fn.emulateTransitionEnd=r,c.supportsTransitionEnd()&&(t.event.special[c.TRANSITION_END]=i())}var a=!1,l=1e6,h={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd otransitionend",transition:"transitionend"},c={TRANSITION_END:"bsTransitionEnd",getUID:function(t){do t+=~~(Math.random()*l);while(document.getElementById(t));return t},getSelectorFromElement:function(t){var e=t.getAttribute("data-target");return e||(e=t.getAttribute("href")||"",e=/^#[a-z]/i.test(e)?e:null),e},reflow:function(t){return t.offsetHeight},triggerTransitionEnd:function(e){t(e).trigger(a.end)},supportsTransitionEnd:function(){return Boolean(a)},typeCheckConfig:function(t,i,o){for(var r in o)if(o.hasOwnProperty(r)){var s=o[r],a=i[r],l=a&&n(a)?"element":e(a);if(!new RegExp(s).test(l))throw new Error(t.toUpperCase()+": "+('Option "'+r+'" provided type "'+l+'" ')+('but expected type "'+s+'".'))}}};return s(),c}(jQuery),s=(function(t){var e="alert",i="4.0.0-alpha.6",s="bs.alert",a="."+s,l=".data-api",h=t.fn[e],c=150,u={DISMISS:'[data-dismiss="alert"]'},d={CLOSE:"close"+a,CLOSED:"closed"+a,CLICK_DATA_API:"click"+a+l},f={ALERT:"alert",FADE:"fade",SHOW:"show"},_=function(){function e(t){n(this,e),this._element=t}return e.prototype.close=function(t){t=t||this._element;var e=this._getRootElement(t),n=this._triggerCloseEvent(e);n.isDefaultPrevented()||this._removeElement(e)},e.prototype.dispose=function(){t.removeData(this._element,s),this._element=null},e.prototype._getRootElement=function(e){var n=r.getSelectorFromElement(e),i=!1;return n&&(i=t(n)[0]),i||(i=t(e).closest("."+f.ALERT)[0]),i},e.prototype._triggerCloseEvent=function(e){var n=t.Event(d.CLOSE);return t(e).trigger(n),n},e.prototype._removeElement=function(e){var n=this;return t(e).removeClass(f.SHOW),r.supportsTransitionEnd()&&t(e).hasClass(f.FADE)?void t(e).one(r.TRANSITION_END,function(t){return n._destroyElement(e,t)}).emulateTransitionEnd(c):void this._destroyElement(e)},e.prototype._destroyElement=function(e){t(e).detach().trigger(d.CLOSED).remove()},e._jQueryInterface=function(n){return this.each(function(){var i=t(this),o=i.data(s);o||(o=new e(this),i.data(s,o)),"close"===n&&o[n](this)})},e._handleDismiss=function(t){return function(e){e&&e.preventDefault(),t.close(this)}},o(e,null,[{key:"VERSION",get:function(){return i}}]),e}();return t(document).on(d.CLICK_DATA_API,u.DISMISS,_._handleDismiss(new _)),t.fn[e]=_._jQueryInterface,t.fn[e].Constructor=_,t.fn[e].noConflict=function(){return t.fn[e]=h,_._jQueryInterface},_}(jQuery),function(t){var e="button",i="4.0.0-alpha.6",r="bs.button",s="."+r,a=".data-api",l=t.fn[e],h={ACTIVE:"active",BUTTON:"btn",FOCUS:"focus"},c={DATA_TOGGLE_CARROT:'[data-toggle^="button"]',DATA_TOGGLE:'[data-toggle="buttons"]',INPUT:"input",ACTIVE:".active",BUTTON:".btn"},u={CLICK_DATA_API:"click"+s+a,FOCUS_BLUR_DATA_API:"focus"+s+a+" "+("blur"+s+a)},d=function(){function e(t){n(this,e),this._element=t}return e.prototype.toggle=function(){var e=!0,n=t(this._element).closest(c.DATA_TOGGLE)[0];if(n){var i=t(this._element).find(c.INPUT)[0];if(i){if("radio"===i.type)if(i.checked&&t(this._element).hasClass(h.ACTIVE))e=!1;else{var o=t(n).find(c.ACTIVE)[0];o&&t(o).removeClass(h.ACTIVE)}e&&(i.checked=!t(this._element).hasClass(h.ACTIVE),t(i).trigger("change")),i.focus()}}this._element.setAttribute("aria-pressed",!t(this._element).hasClass(h.ACTIVE)),e&&t(this._element).toggleClass(h.ACTIVE)},e.prototype.dispose=function(){t.removeData(this._element,r),this._element=null},e._jQueryInterface=function(n){return this.each(function(){var i=t(this).data(r);i||(i=new e(this),t(this).data(r,i)),"toggle"===n&&i[n]()})},o(e,null,[{key:"VERSION",get:function(){return i}}]),e}();return t(document).on(u.CLICK_DATA_API,c.DATA_TOGGLE_CARROT,function(e){e.preventDefault();var n=e.target;t(n).hasClass(h.BUTTON)||(n=t(n).closest(c.BUTTON)),d._jQueryInterface.call(t(n),"toggle")}).on(u.FOCUS_BLUR_DATA_API,c.DATA_TOGGLE_CARROT,function(e){var n=t(e.target).closest(c.BUTTON)[0];t(n).toggleClass(h.FOCUS,/^focus(in)?$/.test(e.type))}),t.fn[e]=d._jQueryInterface,t.fn[e].Constructor=d,t.fn[e].noConflict=function(){return t.fn[e]=l,d._jQueryInterface},d}(jQuery),function(t){var e="carousel",s="4.0.0-alpha.6",a="bs.carousel",l="."+a,h=".data-api",c=t.fn[e],u=600,d=37,f=39,_={interval:5e3,keyboard:!0,slide:!1,pause:"hover",wrap:!0},g={interval:"(number|boolean)",keyboard:"boolean",slide:"(boolean|string)",pause:"(string|boolean)",wrap:"boolean"},p={NEXT:"next",PREV:"prev",LEFT:"left",RIGHT:"right"},m={SLIDE:"slide"+l,SLID:"slid"+l,KEYDOWN:"keydown"+l,MOUSEENTER:"mouseenter"+l,MOUSELEAVE:"mouseleave"+l,LOAD_DATA_API:"load"+l+h,CLICK_DATA_API:"click"+l+h},E={CAROUSEL:"carousel",ACTIVE:"active",SLIDE:"slide",RIGHT:"carousel-item-right",LEFT:"carousel-item-left",NEXT:"carousel-item-next",PREV:"carousel-item-prev",ITEM:"carousel-item"},v={ACTIVE:".active",ACTIVE_ITEM:".active.carousel-item",ITEM:".carousel-item",NEXT_PREV:".carousel-item-next, .carousel-item-prev",INDICATORS:".carousel-indicators",DATA_SLIDE:"[data-slide], [data-slide-to]",DATA_RIDE:'[data-ride="carousel"]'},T=function(){function h(e,i){n(this,h),this._items=null,this._interval=null,this._activeElement=null,this._isPaused=!1,this._isSliding=!1,this._config=this._getConfig(i),this._element=t(e)[0],this._indicatorsElement=t(this._element).find(v.INDICATORS)[0],this._addEventListeners()}return h.prototype.next=function(){if(this._isSliding)throw new Error("Carousel is sliding");this._slide(p.NEXT)},h.prototype.nextWhenVisible=function(){document.hidden||this.next()},h.prototype.prev=function(){if(this._isSliding)throw new Error("Carousel is sliding");this._slide(p.PREVIOUS)},h.prototype.pause=function(e){e||(this._isPaused=!0),t(this._element).find(v.NEXT_PREV)[0]&&r.supportsTransitionEnd()&&(r.triggerTransitionEnd(this._element),this.cycle(!0)),clearInterval(this._interval),this._interval=null},h.prototype.cycle=function(t){t||(this._isPaused=!1),this._interval&&(clearInterval(this._interval),this._interval=null),this._config.interval&&!this._isPaused&&(this._interval=setInterval((document.visibilityState?this.nextWhenVisible:this.next).bind(this),this._config.interval))},h.prototype.to=function(e){var n=this;this._activeElement=t(this._element).find(v.ACTIVE_ITEM)[0];var i=this._getItemIndex(this._activeElement);if(!(e>this._items.length-1||e<0)){if(this._isSliding)return void t(this._element).one(m.SLID,function(){return n.to(e)});if(i===e)return this.pause(),void this.cycle();var o=e>i?p.NEXT:p.PREVIOUS;this._slide(o,this._items[e])}},h.prototype.dispose=function(){t(this._element).off(l),t.removeData(this._element,a),this._items=null,this._config=null,this._element=null,this._interval=null,this._isPaused=null,this._isSliding=null,this._activeElement=null,this._indicatorsElement=null},h.prototype._getConfig=function(n){return n=t.extend({},_,n),r.typeCheckConfig(e,n,g),n},h.prototype._addEventListeners=function(){var e=this;this._config.keyboard&&t(this._element).on(m.KEYDOWN,function(t){return e._keydown(t)}),"hover"!==this._config.pause||"ontouchstart"in document.documentElement||t(this._element).on(m.MOUSEENTER,function(t){return e.pause(t)}).on(m.MOUSELEAVE,function(t){return e.cycle(t)})},h.prototype._keydown=function(t){if(!/input|textarea/i.test(t.target.tagName))switch(t.which){case d:t.preventDefault(),this.prev();break;case f:t.preventDefault(),this.next();break;default:return}},h.prototype._getItemIndex=function(e){return this._items=t.makeArray(t(e).parent().find(v.ITEM)),this._items.indexOf(e)},h.prototype._getItemByDirection=function(t,e){var n=t===p.NEXT,i=t===p.PREVIOUS,o=this._getItemIndex(e),r=this._items.length-1,s=i&&0===o||n&&o===r;if(s&&!this._config.wrap)return e;var a=t===p.PREVIOUS?-1:1,l=(o+a)%this._items.length;return l===-1?this._items[this._items.length-1]:this._items[l]},h.prototype._triggerSlideEvent=function(e,n){var i=t.Event(m.SLIDE,{relatedTarget:e,direction:n});return t(this._element).trigger(i),i},h.prototype._setActiveIndicatorElement=function(e){if(this._indicatorsElement){t(this._indicatorsElement).find(v.ACTIVE).removeClass(E.ACTIVE);var n=this._indicatorsElement.children[this._getItemIndex(e)];n&&t(n).addClass(E.ACTIVE)}},h.prototype._slide=function(e,n){var i=this,o=t(this._element).find(v.ACTIVE_ITEM)[0],s=n||o&&this._getItemByDirection(e,o),a=Boolean(this._interval),l=void 0,h=void 0,c=void 0;if(e===p.NEXT?(l=E.LEFT,h=E.NEXT,c=p.LEFT):(l=E.RIGHT,h=E.PREV,c=p.RIGHT),s&&t(s).hasClass(E.ACTIVE))return void(this._isSliding=!1);var d=this._triggerSlideEvent(s,c);if(!d.isDefaultPrevented()&&o&&s){this._isSliding=!0,a&&this.pause(),this._setActiveIndicatorElement(s);var f=t.Event(m.SLID,{relatedTarget:s,direction:c});r.supportsTransitionEnd()&&t(this._element).hasClass(E.SLIDE)?(t(s).addClass(h),r.reflow(s),t(o).addClass(l),t(s).addClass(l),t(o).one(r.TRANSITION_END,function(){t(s).removeClass(l+" "+h).addClass(E.ACTIVE),t(o).removeClass(E.ACTIVE+" "+h+" "+l),i._isSliding=!1,setTimeout(function(){return t(i._element).trigger(f)},0)}).emulateTransitionEnd(u)):(t(o).removeClass(E.ACTIVE),t(s).addClass(E.ACTIVE),this._isSliding=!1,t(this._element).trigger(f)),a&&this.cycle()}},h._jQueryInterface=function(e){return this.each(function(){var n=t(this).data(a),o=t.extend({},_,t(this).data());"object"===("undefined"==typeof e?"undefined":i(e))&&t.extend(o,e);var r="string"==typeof e?e:o.slide;if(n||(n=new h(this,o),t(this).data(a,n)),"number"==typeof e)n.to(e);else if("string"==typeof r){if(void 0===n[r])throw new Error('No method named "'+r+'"');n[r]()}else o.interval&&(n.pause(),n.cycle())})},h._dataApiClickHandler=function(e){var n=r.getSelectorFromElement(this);if(n){var i=t(n)[0];if(i&&t(i).hasClass(E.CAROUSEL)){var o=t.extend({},t(i).data(),t(this).data()),s=this.getAttribute("data-slide-to");s&&(o.interval=!1),h._jQueryInterface.call(t(i),o),s&&t(i).data(a).to(s),e.preventDefault()}}},o(h,null,[{key:"VERSION",get:function(){return s}},{key:"Default",get:function(){return _}}]),h}();return t(document).on(m.CLICK_DATA_API,v.DATA_SLIDE,T._dataApiClickHandler),t(window).on(m.LOAD_DATA_API,function(){t(v.DATA_RIDE).each(function(){var e=t(this);T._jQueryInterface.call(e,e.data())})}),t.fn[e]=T._jQueryInterface,t.fn[e].Constructor=T,t.fn[e].noConflict=function(){return t.fn[e]=c,T._jQueryInterface},T}(jQuery),function(t){var e="collapse",s="4.0.0-alpha.6",a="bs.collapse",l="."+a,h=".data-api",c=t.fn[e],u=600,d={toggle:!0,parent:""},f={toggle:"boolean",parent:"string"},_={SHOW:"show"+l,SHOWN:"shown"+l,HIDE:"hide"+l,HIDDEN:"hidden"+l,CLICK_DATA_API:"click"+l+h},g={SHOW:"show",COLLAPSE:"collapse",COLLAPSING:"collapsing",COLLAPSED:"collapsed"},p={WIDTH:"width",HEIGHT:"height"},m={ACTIVES:".card > .show, .card > .collapsing",DATA_TOGGLE:'[data-toggle="collapse"]'},E=function(){function l(e,i){n(this,l),this._isTransitioning=!1,this._element=e,this._config=this._getConfig(i),this._triggerArray=t.makeArray(t('[data-toggle="collapse"][href="#'+e.id+'"],'+('[data-toggle="collapse"][data-target="#'+e.id+'"]'))),this._parent=this._config.parent?this._getParent():null,this._config.parent||this._addAriaAndCollapsedClass(this._element,this._triggerArray),this._config.toggle&&this.toggle()}return l.prototype.toggle=function(){t(this._element).hasClass(g.SHOW)?this.hide():this.show()},l.prototype.show=function(){var e=this;if(this._isTransitioning)throw new Error("Collapse is transitioning");if(!t(this._element).hasClass(g.SHOW)){var n=void 0,i=void 0;if(this._parent&&(n=t.makeArray(t(this._parent).find(m.ACTIVES)),n.length||(n=null)),!(n&&(i=t(n).data(a),i&&i._isTransitioning))){var o=t.Event(_.SHOW);if(t(this._element).trigger(o),!o.isDefaultPrevented()){n&&(l._jQueryInterface.call(t(n),"hide"),i||t(n).data(a,null));var s=this._getDimension();t(this._element).removeClass(g.COLLAPSE).addClass(g.COLLAPSING),this._element.style[s]=0,this._element.setAttribute("aria-expanded",!0),this._triggerArray.length&&t(this._triggerArray).removeClass(g.COLLAPSED).attr("aria-expanded",!0),this.setTransitioning(!0);var h=function(){t(e._element).removeClass(g.COLLAPSING).addClass(g.COLLAPSE).addClass(g.SHOW),e._element.style[s]="",e.setTransitioning(!1),t(e._element).trigger(_.SHOWN)};if(!r.supportsTransitionEnd())return void h();var c=s[0].toUpperCase()+s.slice(1),d="scroll"+c;t(this._element).one(r.TRANSITION_END,h).emulateTransitionEnd(u),this._element.style[s]=this._element[d]+"px"}}}},l.prototype.hide=function(){var e=this;if(this._isTransitioning)throw new Error("Collapse is transitioning");if(t(this._element).hasClass(g.SHOW)){var n=t.Event(_.HIDE);if(t(this._element).trigger(n),!n.isDefaultPrevented()){var i=this._getDimension(),o=i===p.WIDTH?"offsetWidth":"offsetHeight";this._element.style[i]=this._element[o]+"px",r.reflow(this._element),t(this._element).addClass(g.COLLAPSING).removeClass(g.COLLAPSE).removeClass(g.SHOW),this._element.setAttribute("aria-expanded",!1),this._triggerArray.length&&t(this._triggerArray).addClass(g.COLLAPSED).attr("aria-expanded",!1),this.setTransitioning(!0);var s=function(){e.setTransitioning(!1),t(e._element).removeClass(g.COLLAPSING).addClass(g.COLLAPSE).trigger(_.HIDDEN)};return this._element.style[i]="",r.supportsTransitionEnd()?void t(this._element).one(r.TRANSITION_END,s).emulateTransitionEnd(u):void s()}}},l.prototype.setTransitioning=function(t){this._isTransitioning=t},l.prototype.dispose=function(){t.removeData(this._element,a),this._config=null,this._parent=null,this._element=null,this._triggerArray=null,this._isTransitioning=null},l.prototype._getConfig=function(n){return n=t.extend({},d,n),n.toggle=Boolean(n.toggle),r.typeCheckConfig(e,n,f),n},l.prototype._getDimension=function(){var e=t(this._element).hasClass(p.WIDTH);return e?p.WIDTH:p.HEIGHT},l.prototype._getParent=function(){var e=this,n=t(this._config.parent)[0],i='[data-toggle="collapse"][data-parent="'+this._config.parent+'"]';return t(n).find(i).each(function(t,n){e._addAriaAndCollapsedClass(l._getTargetFromElement(n),[n])}),n},l.prototype._addAriaAndCollapsedClass=function(e,n){if(e){var i=t(e).hasClass(g.SHOW);e.setAttribute("aria-expanded",i),n.length&&t(n).toggleClass(g.COLLAPSED,!i).attr("aria-expanded",i)}},l._getTargetFromElement=function(e){var n=r.getSelectorFromElement(e);return n?t(n)[0]:null},l._jQueryInterface=function(e){return this.each(function(){var n=t(this),o=n.data(a),r=t.extend({},d,n.data(),"object"===("undefined"==typeof e?"undefined":i(e))&&e);if(!o&&r.toggle&&/show|hide/.test(e)&&(r.toggle=!1),o||(o=new l(this,r),n.data(a,o)),"string"==typeof e){if(void 0===o[e])throw new Error('No method named "'+e+'"');o[e]()}})},o(l,null,[{key:"VERSION",get:function(){return s}},{key:"Default",get:function(){return d}}]),l}();return t(document).on(_.CLICK_DATA_API,m.DATA_TOGGLE,function(e){e.preventDefault();var n=E._getTargetFromElement(this),i=t(n).data(a),o=i?"toggle":t(this).data();E._jQueryInterface.call(t(n),o)}),t.fn[e]=E._jQueryInterface,t.fn[e].Constructor=E,t.fn[e].noConflict=function(){return t.fn[e]=c,E._jQueryInterface},E}(jQuery),function(t){var e="dropdown",i="4.0.0-alpha.6",s="bs.dropdown",a="."+s,l=".data-api",h=t.fn[e],c=27,u=38,d=40,f=3,_={HIDE:"hide"+a,HIDDEN:"hidden"+a,SHOW:"show"+a,SHOWN:"shown"+a,CLICK:"click"+a,CLICK_DATA_API:"click"+a+l,FOCUSIN_DATA_API:"focusin"+a+l,KEYDOWN_DATA_API:"keydown"+a+l},g={BACKDROP:"dropdown-backdrop",DISABLED:"disabled",SHOW:"show"},p={BACKDROP:".dropdown-backdrop",DATA_TOGGLE:'[data-toggle="dropdown"]',FORM_CHILD:".dropdown form",ROLE_MENU:'[role="menu"]',ROLE_LISTBOX:'[role="listbox"]',NAVBAR_NAV:".navbar-nav",VISIBLE_ITEMS:'[role="menu"] li:not(.disabled) a, [role="listbox"] li:not(.disabled) a'},m=function(){function e(t){n(this,e),this._element=t,this._addEventListeners()}return e.prototype.toggle=function(){if(this.disabled||t(this).hasClass(g.DISABLED))return!1;var n=e._getParentFromElement(this),i=t(n).hasClass(g.SHOW);if(e._clearMenus(),i)return!1;if("ontouchstart"in document.documentElement&&!t(n).closest(p.NAVBAR_NAV).length){var o=document.createElement("div");o.className=g.BACKDROP,t(o).insertBefore(this),t(o).on("click",e._clearMenus)}var r={relatedTarget:this},s=t.Event(_.SHOW,r);return t(n).trigger(s),!s.isDefaultPrevented()&&(this.focus(),this.setAttribute("aria-expanded",!0),t(n).toggleClass(g.SHOW),t(n).trigger(t.Event(_.SHOWN,r)),!1)},e.prototype.dispose=function(){t.removeData(this._element,s),t(this._element).off(a),this._element=null},e.prototype._addEventListeners=function(){t(this._element).on(_.CLICK,this.toggle)},e._jQueryInterface=function(n){return this.each(function(){var i=t(this).data(s);if(i||(i=new e(this),t(this).data(s,i)),"string"==typeof n){if(void 0===i[n])throw new Error('No method named "'+n+'"');i[n].call(this)}})},e._clearMenus=function(n){if(!n||n.which!==f){var i=t(p.BACKDROP)[0];i&&i.parentNode.removeChild(i);for(var o=t.makeArray(t(p.DATA_TOGGLE)),r=0;r<o.length;r++){var s=e._getParentFromElement(o[r]),a={relatedTarget:o[r]};if(t(s).hasClass(g.SHOW)&&!(n&&("click"===n.type&&/input|textarea/i.test(n.target.tagName)||"focusin"===n.type)&&t.contains(s,n.target))){var l=t.Event(_.HIDE,a);t(s).trigger(l),l.isDefaultPrevented()||(o[r].setAttribute("aria-expanded","false"),t(s).removeClass(g.SHOW).trigger(t.Event(_.HIDDEN,a)))}}}},e._getParentFromElement=function(e){var n=void 0,i=r.getSelectorFromElement(e);return i&&(n=t(i)[0]),n||e.parentNode},e._dataApiKeydownHandler=function(n){if(/(38|40|27|32)/.test(n.which)&&!/input|textarea/i.test(n.target.tagName)&&(n.preventDefault(),n.stopPropagation(),!this.disabled&&!t(this).hasClass(g.DISABLED))){var i=e._getParentFromElement(this),o=t(i).hasClass(g.SHOW);if(!o&&n.which!==c||o&&n.which===c){if(n.which===c){var r=t(i).find(p.DATA_TOGGLE)[0];t(r).trigger("focus")}return void t(this).trigger("click")}var s=t(i).find(p.VISIBLE_ITEMS).get();if(s.length){var a=s.indexOf(n.target);n.which===u&&a>0&&a--,n.which===d&&a<s.length-1&&a++,a<0&&(a=0),s[a].focus()}}},o(e,null,[{key:"VERSION",get:function(){return i}}]),e}();return t(document).on(_.KEYDOWN_DATA_API,p.DATA_TOGGLE,m._dataApiKeydownHandler).on(_.KEYDOWN_DATA_API,p.ROLE_MENU,m._dataApiKeydownHandler).on(_.KEYDOWN_DATA_API,p.ROLE_LISTBOX,m._dataApiKeydownHandler).on(_.CLICK_DATA_API+" "+_.FOCUSIN_DATA_API,m._clearMenus).on(_.CLICK_DATA_API,p.DATA_TOGGLE,m.prototype.toggle).on(_.CLICK_DATA_API,p.FORM_CHILD,function(t){t.stopPropagation()}),t.fn[e]=m._jQueryInterface,t.fn[e].Constructor=m,t.fn[e].noConflict=function(){return t.fn[e]=h,m._jQueryInterface},m}(jQuery),function(t){var e="modal",s="4.0.0-alpha.6",a="bs.modal",l="."+a,h=".data-api",c=t.fn[e],u=300,d=150,f=27,_={backdrop:!0,keyboard:!0,focus:!0,show:!0},g={backdrop:"(boolean|string)",keyboard:"boolean",focus:"boolean",show:"boolean"},p={HIDE:"hide"+l,HIDDEN:"hidden"+l,SHOW:"show"+l,SHOWN:"shown"+l,FOCUSIN:"focusin"+l,RESIZE:"resize"+l,CLICK_DISMISS:"click.dismiss"+l,KEYDOWN_DISMISS:"keydown.dismiss"+l,MOUSEUP_DISMISS:"mouseup.dismiss"+l,MOUSEDOWN_DISMISS:"mousedown.dismiss"+l,CLICK_DATA_API:"click"+l+h},m={SCROLLBAR_MEASURER:"modal-scrollbar-measure",BACKDROP:"modal-backdrop",OPEN:"modal-open",FADE:"fade",SHOW:"show"},E={DIALOG:".modal-dialog",DATA_TOGGLE:'[data-toggle="modal"]',DATA_DISMISS:'[data-dismiss="modal"]',FIXED_CONTENT:".fixed-top, .fixed-bottom, .is-fixed, .sticky-top"},v=function(){function h(e,i){n(this,h),this._config=this._getConfig(i),this._element=e,this._dialog=t(e).find(E.DIALOG)[0],this._backdrop=null,this._isShown=!1,this._isBodyOverflowing=!1,this._ignoreBackdropClick=!1,this._isTransitioning=!1,this._originalBodyPadding=0,this._scrollbarWidth=0}return h.prototype.toggle=function(t){return this._isShown?this.hide():this.show(t)},h.prototype.show=function(e){var n=this;if(this._isTransitioning)throw new Error("Modal is transitioning");r.supportsTransitionEnd()&&t(this._element).hasClass(m.FADE)&&(this._isTransitioning=!0);var i=t.Event(p.SHOW,{relatedTarget:e});t(this._element).trigger(i),this._isShown||i.isDefaultPrevented()||(this._isShown=!0,this._checkScrollbar(),this._setScrollbar(),t(document.body).addClass(m.OPEN),this._setEscapeEvent(),this._setResizeEvent(),t(this._element).on(p.CLICK_DISMISS,E.DATA_DISMISS,function(t){return n.hide(t)}),t(this._dialog).on(p.MOUSEDOWN_DISMISS,function(){t(n._element).one(p.MOUSEUP_DISMISS,function(e){t(e.target).is(n._element)&&(n._ignoreBackdropClick=!0)})}),this._showBackdrop(function(){return n._showElement(e)}))},h.prototype.hide=function(e){var n=this;if(e&&e.preventDefault(),this._isTransitioning)throw new Error("Modal is transitioning");var i=r.supportsTransitionEnd()&&t(this._element).hasClass(m.FADE);i&&(this._isTransitioning=!0);var o=t.Event(p.HIDE);t(this._element).trigger(o),this._isShown&&!o.isDefaultPrevented()&&(this._isShown=!1,this._setEscapeEvent(),this._setResizeEvent(),t(document).off(p.FOCUSIN),t(this._element).removeClass(m.SHOW),t(this._element).off(p.CLICK_DISMISS),t(this._dialog).off(p.MOUSEDOWN_DISMISS),i?t(this._element).one(r.TRANSITION_END,function(t){return n._hideModal(t)}).emulateTransitionEnd(u):this._hideModal())},h.prototype.dispose=function(){t.removeData(this._element,a),t(window,document,this._element,this._backdrop).off(l),this._config=null,this._element=null,this._dialog=null,this._backdrop=null,this._isShown=null,this._isBodyOverflowing=null,this._ignoreBackdropClick=null,this._originalBodyPadding=null,this._scrollbarWidth=null},h.prototype._getConfig=function(n){return n=t.extend({},_,n),r.typeCheckConfig(e,n,g),n},h.prototype._showElement=function(e){var n=this,i=r.supportsTransitionEnd()&&t(this._element).hasClass(m.FADE);this._element.parentNode&&this._element.parentNode.nodeType===Node.ELEMENT_NODE||document.body.appendChild(this._element),this._element.style.display="block",this._element.removeAttribute("aria-hidden"),this._element.scrollTop=0,i&&r.reflow(this._element),t(this._element).addClass(m.SHOW),this._config.focus&&this._enforceFocus();var o=t.Event(p.SHOWN,{relatedTarget:e}),s=function(){n._config.focus&&n._element.focus(),n._isTransitioning=!1,t(n._element).trigger(o)};i?t(this._dialog).one(r.TRANSITION_END,s).emulateTransitionEnd(u):s()},h.prototype._enforceFocus=function(){var e=this;t(document).off(p.FOCUSIN).on(p.FOCUSIN,function(n){document===n.target||e._element===n.target||t(e._element).has(n.target).length||e._element.focus()})},h.prototype._setEscapeEvent=function(){var e=this;this._isShown&&this._config.keyboard?t(this._element).on(p.KEYDOWN_DISMISS,function(t){t.which===f&&e.hide()}):this._isShown||t(this._element).off(p.KEYDOWN_DISMISS)},h.prototype._setResizeEvent=function(){var e=this;this._isShown?t(window).on(p.RESIZE,function(t){return e._handleUpdate(t)}):t(window).off(p.RESIZE)},h.prototype._hideModal=function(){var e=this;this._element.style.display="none",this._element.setAttribute("aria-hidden","true"),this._isTransitioning=!1,this._showBackdrop(function(){t(document.body).removeClass(m.OPEN),e._resetAdjustments(),e._resetScrollbar(),t(e._element).trigger(p.HIDDEN)})},h.prototype._removeBackdrop=function(){this._backdrop&&(t(this._backdrop).remove(),this._backdrop=null)},h.prototype._showBackdrop=function(e){var n=this,i=t(this._element).hasClass(m.FADE)?m.FADE:"";if(this._isShown&&this._config.backdrop){var o=r.supportsTransitionEnd()&&i;if(this._backdrop=document.createElement("div"),this._backdrop.className=m.BACKDROP,i&&t(this._backdrop).addClass(i),t(this._backdrop).appendTo(document.body),t(this._element).on(p.CLICK_DISMISS,function(t){return n._ignoreBackdropClick?void(n._ignoreBackdropClick=!1):void(t.target===t.currentTarget&&("static"===n._config.backdrop?n._element.focus():n.hide()))}),o&&r.reflow(this._backdrop),t(this._backdrop).addClass(m.SHOW),!e)return;if(!o)return void e();t(this._backdrop).one(r.TRANSITION_END,e).emulateTransitionEnd(d)}else if(!this._isShown&&this._backdrop){t(this._backdrop).removeClass(m.SHOW);var s=function(){n._removeBackdrop(),e&&e()};r.supportsTransitionEnd()&&t(this._element).hasClass(m.FADE)?t(this._backdrop).one(r.TRANSITION_END,s).emulateTransitionEnd(d):s()}else e&&e()},h.prototype._handleUpdate=function(){this._adjustDialog()},h.prototype._adjustDialog=function(){var t=this._element.scrollHeight>document.documentElement.clientHeight;!this._isBodyOverflowing&&t&&(this._element.style.paddingLeft=this._scrollbarWidth+"px"),this._isBodyOverflowing&&!t&&(this._element.style.paddingRight=this._scrollbarWidth+"px")},h.prototype._resetAdjustments=function(){this._element.style.paddingLeft="",this._element.style.paddingRight=""},h.prototype._checkScrollbar=function(){this._isBodyOverflowing=document.body.clientWidth<window.innerWidth,this._scrollbarWidth=this._getScrollbarWidth()},h.prototype._setScrollbar=function(){var e=parseInt(t(E.FIXED_CONTENT).css("padding-right")||0,10);this._originalBodyPadding=document.body.style.paddingRight||"",this._isBodyOverflowing&&(document.body.style.paddingRight=e+this._scrollbarWidth+"px")},h.prototype._resetScrollbar=function(){document.body.style.paddingRight=this._originalBodyPadding},h.prototype._getScrollbarWidth=function(){var t=document.createElement("div");t.className=m.SCROLLBAR_MEASURER,document.body.appendChild(t);var e=t.offsetWidth-t.clientWidth;return document.body.removeChild(t),e},h._jQueryInterface=function(e,n){return this.each(function(){var o=t(this).data(a),r=t.extend({},h.Default,t(this).data(),"object"===("undefined"==typeof e?"undefined":i(e))&&e);if(o||(o=new h(this,r),t(this).data(a,o)),"string"==typeof e){if(void 0===o[e])throw new Error('No method named "'+e+'"');o[e](n)}else r.show&&o.show(n)})},o(h,null,[{key:"VERSION",get:function(){return s}},{key:"Default",get:function(){return _}}]),h}();return t(document).on(p.CLICK_DATA_API,E.DATA_TOGGLE,function(e){var n=this,i=void 0,o=r.getSelectorFromElement(this);o&&(i=t(o)[0]);var s=t(i).data(a)?"toggle":t.extend({},t(i).data(),t(this).data());"A"!==this.tagName&&"AREA"!==this.tagName||e.preventDefault();var l=t(i).one(p.SHOW,function(e){e.isDefaultPrevented()||l.one(p.HIDDEN,function(){t(n).is(":visible")&&n.focus()})});v._jQueryInterface.call(t(i),s,this)}),t.fn[e]=v._jQueryInterface,t.fn[e].Constructor=v,t.fn[e].noConflict=function(){return t.fn[e]=c,v._jQueryInterface},v}(jQuery),function(t){var e="scrollspy",s="4.0.0-alpha.6",a="bs.scrollspy",l="."+a,h=".data-api",c=t.fn[e],u={offset:10,method:"auto",target:""},d={offset:"number",method:"string",target:"(string|element)"},f={ACTIVATE:"activate"+l,SCROLL:"scroll"+l,LOAD_DATA_API:"load"+l+h},_={DROPDOWN_ITEM:"dropdown-item",DROPDOWN_MENU:"dropdown-menu",NAV_LINK:"nav-link",NAV:"nav",ACTIVE:"active"},g={DATA_SPY:'[data-spy="scroll"]',ACTIVE:".active",LIST_ITEM:".list-item",LI:"li",LI_DROPDOWN:"li.dropdown",NAV_LINKS:".nav-link",DROPDOWN:".dropdown",DROPDOWN_ITEMS:".dropdown-item",DROPDOWN_TOGGLE:".dropdown-toggle"},p={OFFSET:"offset",POSITION:"position"},m=function(){function h(e,i){var o=this;n(this,h),this._element=e,this._scrollElement="BODY"===e.tagName?window:e,this._config=this._getConfig(i),this._selector=this._config.target+" "+g.NAV_LINKS+","+(this._config.target+" "+g.DROPDOWN_ITEMS),this._offsets=[],this._targets=[],this._activeTarget=null,this._scrollHeight=0,t(this._scrollElement).on(f.SCROLL,function(t){return o._process(t)}),this.refresh(),this._process()}return h.prototype.refresh=function(){var e=this,n=this._scrollElement!==this._scrollElement.window?p.POSITION:p.OFFSET,i="auto"===this._config.method?n:this._config.method,o=i===p.POSITION?this._getScrollTop():0;this._offsets=[],this._targets=[],this._scrollHeight=this._getScrollHeight();var s=t.makeArray(t(this._selector));s.map(function(e){var n=void 0,s=r.getSelectorFromElement(e);return s&&(n=t(s)[0]),n&&(n.offsetWidth||n.offsetHeight)?[t(n)[i]().top+o,s]:null}).filter(function(t){return t}).sort(function(t,e){return t[0]-e[0]}).forEach(function(t){e._offsets.push(t[0]),e._targets.push(t[1])})},h.prototype.dispose=function(){t.removeData(this._element,a),t(this._scrollElement).off(l),this._element=null,this._scrollElement=null,this._config=null,this._selector=null,this._offsets=null,this._targets=null,this._activeTarget=null,this._scrollHeight=null},h.prototype._getConfig=function(n){if(n=t.extend({},u,n),"string"!=typeof n.target){var i=t(n.target).attr("id");i||(i=r.getUID(e),t(n.target).attr("id",i)),n.target="#"+i}return r.typeCheckConfig(e,n,d),n},h.prototype._getScrollTop=function(){return this._scrollElement===window?this._scrollElement.pageYOffset:this._scrollElement.scrollTop},h.prototype._getScrollHeight=function(){return this._scrollElement.scrollHeight||Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)},h.prototype._getOffsetHeight=function(){return this._scrollElement===window?window.innerHeight:this._scrollElement.offsetHeight},h.prototype._process=function(){var t=this._getScrollTop()+this._config.offset,e=this._getScrollHeight(),n=this._config.offset+e-this._getOffsetHeight();if(this._scrollHeight!==e&&this.refresh(),t>=n){var i=this._targets[this._targets.length-1];return void(this._activeTarget!==i&&this._activate(i))}if(this._activeTarget&&t<this._offsets[0]&&this._offsets[0]>0)return this._activeTarget=null,void this._clear();for(var o=this._offsets.length;o--;){var r=this._activeTarget!==this._targets[o]&&t>=this._offsets[o]&&(void 0===this._offsets[o+1]||t<this._offsets[o+1]);r&&this._activate(this._targets[o])}},h.prototype._activate=function(e){this._activeTarget=e,this._clear();var n=this._selector.split(",");n=n.map(function(t){return t+'[data-target="'+e+'"],'+(t+'[href="'+e+'"]')});var i=t(n.join(","));i.hasClass(_.DROPDOWN_ITEM)?(i.closest(g.DROPDOWN).find(g.DROPDOWN_TOGGLE).addClass(_.ACTIVE),i.addClass(_.ACTIVE)):i.parents(g.LI).find("> "+g.NAV_LINKS).addClass(_.ACTIVE),t(this._scrollElement).trigger(f.ACTIVATE,{relatedTarget:e})},h.prototype._clear=function(){t(this._selector).filter(g.ACTIVE).removeClass(_.ACTIVE)},h._jQueryInterface=function(e){return this.each(function(){var n=t(this).data(a),o="object"===("undefined"==typeof e?"undefined":i(e))&&e;
 if(n||(n=new h(this,o),t(this).data(a,n)),"string"==typeof e){if(void 0===n[e])throw new Error('No method named "'+e+'"');n[e]()}})},o(h,null,[{key:"VERSION",get:function(){return s}},{key:"Default",get:function(){return u}}]),h}();return t(window).on(f.LOAD_DATA_API,function(){for(var e=t.makeArray(t(g.DATA_SPY)),n=e.length;n--;){var i=t(e[n]);m._jQueryInterface.call(i,i.data())}}),t.fn[e]=m._jQueryInterface,t.fn[e].Constructor=m,t.fn[e].noConflict=function(){return t.fn[e]=c,m._jQueryInterface},m}(jQuery),function(t){var e="tab",i="4.0.0-alpha.6",s="bs.tab",a="."+s,l=".data-api",h=t.fn[e],c=150,u={HIDE:"hide"+a,HIDDEN:"hidden"+a,SHOW:"show"+a,SHOWN:"shown"+a,CLICK_DATA_API:"click"+a+l},d={DROPDOWN_MENU:"dropdown-menu",ACTIVE:"active",DISABLED:"disabled",FADE:"fade",SHOW:"show"},f={A:"a",LI:"li",DROPDOWN:".dropdown",LIST:"ul:not(.dropdown-menu), ol:not(.dropdown-menu), nav:not(.dropdown-menu)",FADE_CHILD:"> .nav-item .fade, > .fade",ACTIVE:".active",ACTIVE_CHILD:"> .nav-item > .active, > .active",DATA_TOGGLE:'[data-toggle="tab"], [data-toggle="pill"]',DROPDOWN_TOGGLE:".dropdown-toggle",DROPDOWN_ACTIVE_CHILD:"> .dropdown-menu .active"},_=function(){function e(t){n(this,e),this._element=t}return e.prototype.show=function(){var e=this;if(!(this._element.parentNode&&this._element.parentNode.nodeType===Node.ELEMENT_NODE&&t(this._element).hasClass(d.ACTIVE)||t(this._element).hasClass(d.DISABLED))){var n=void 0,i=void 0,o=t(this._element).closest(f.LIST)[0],s=r.getSelectorFromElement(this._element);o&&(i=t.makeArray(t(o).find(f.ACTIVE)),i=i[i.length-1]);var a=t.Event(u.HIDE,{relatedTarget:this._element}),l=t.Event(u.SHOW,{relatedTarget:i});if(i&&t(i).trigger(a),t(this._element).trigger(l),!l.isDefaultPrevented()&&!a.isDefaultPrevented()){s&&(n=t(s)[0]),this._activate(this._element,o);var h=function(){var n=t.Event(u.HIDDEN,{relatedTarget:e._element}),o=t.Event(u.SHOWN,{relatedTarget:i});t(i).trigger(n),t(e._element).trigger(o)};n?this._activate(n,n.parentNode,h):h()}}},e.prototype.dispose=function(){t.removeClass(this._element,s),this._element=null},e.prototype._activate=function(e,n,i){var o=this,s=t(n).find(f.ACTIVE_CHILD)[0],a=i&&r.supportsTransitionEnd()&&(s&&t(s).hasClass(d.FADE)||Boolean(t(n).find(f.FADE_CHILD)[0])),l=function(){return o._transitionComplete(e,s,a,i)};s&&a?t(s).one(r.TRANSITION_END,l).emulateTransitionEnd(c):l(),s&&t(s).removeClass(d.SHOW)},e.prototype._transitionComplete=function(e,n,i,o){if(n){t(n).removeClass(d.ACTIVE);var s=t(n.parentNode).find(f.DROPDOWN_ACTIVE_CHILD)[0];s&&t(s).removeClass(d.ACTIVE),n.setAttribute("aria-expanded",!1)}if(t(e).addClass(d.ACTIVE),e.setAttribute("aria-expanded",!0),i?(r.reflow(e),t(e).addClass(d.SHOW)):t(e).removeClass(d.FADE),e.parentNode&&t(e.parentNode).hasClass(d.DROPDOWN_MENU)){var a=t(e).closest(f.DROPDOWN)[0];a&&t(a).find(f.DROPDOWN_TOGGLE).addClass(d.ACTIVE),e.setAttribute("aria-expanded",!0)}o&&o()},e._jQueryInterface=function(n){return this.each(function(){var i=t(this),o=i.data(s);if(o||(o=new e(this),i.data(s,o)),"string"==typeof n){if(void 0===o[n])throw new Error('No method named "'+n+'"');o[n]()}})},o(e,null,[{key:"VERSION",get:function(){return i}}]),e}();return t(document).on(u.CLICK_DATA_API,f.DATA_TOGGLE,function(e){e.preventDefault(),_._jQueryInterface.call(t(this),"show")}),t.fn[e]=_._jQueryInterface,t.fn[e].Constructor=_,t.fn[e].noConflict=function(){return t.fn[e]=h,_._jQueryInterface},_}(jQuery),function(t){if("undefined"==typeof Tether)throw new Error("Bootstrap tooltips require Tether (http://tether.io/)");var e="tooltip",s="4.0.0-alpha.6",a="bs.tooltip",l="."+a,h=t.fn[e],c=150,u="bs-tether",d={animation:!0,template:'<div class="tooltip" role="tooltip"><div class="tooltip-inner"></div></div>',trigger:"hover focus",title:"",delay:0,html:!1,selector:!1,placement:"top",offset:"0 0",constraints:[],container:!1},f={animation:"boolean",template:"string",title:"(string|element|function)",trigger:"string",delay:"(number|object)",html:"boolean",selector:"(string|boolean)",placement:"(string|function)",offset:"string",constraints:"array",container:"(string|element|boolean)"},_={TOP:"bottom center",RIGHT:"middle left",BOTTOM:"top center",LEFT:"middle right"},g={SHOW:"show",OUT:"out"},p={HIDE:"hide"+l,HIDDEN:"hidden"+l,SHOW:"show"+l,SHOWN:"shown"+l,INSERTED:"inserted"+l,CLICK:"click"+l,FOCUSIN:"focusin"+l,FOCUSOUT:"focusout"+l,MOUSEENTER:"mouseenter"+l,MOUSELEAVE:"mouseleave"+l},m={FADE:"fade",SHOW:"show"},E={TOOLTIP:".tooltip",TOOLTIP_INNER:".tooltip-inner"},v={element:!1,enabled:!1},T={HOVER:"hover",FOCUS:"focus",CLICK:"click",MANUAL:"manual"},I=function(){function h(t,e){n(this,h),this._isEnabled=!0,this._timeout=0,this._hoverState="",this._activeTrigger={},this._isTransitioning=!1,this._tether=null,this.element=t,this.config=this._getConfig(e),this.tip=null,this._setListeners()}return h.prototype.enable=function(){this._isEnabled=!0},h.prototype.disable=function(){this._isEnabled=!1},h.prototype.toggleEnabled=function(){this._isEnabled=!this._isEnabled},h.prototype.toggle=function(e){if(e){var n=this.constructor.DATA_KEY,i=t(e.currentTarget).data(n);i||(i=new this.constructor(e.currentTarget,this._getDelegateConfig()),t(e.currentTarget).data(n,i)),i._activeTrigger.click=!i._activeTrigger.click,i._isWithActiveTrigger()?i._enter(null,i):i._leave(null,i)}else{if(t(this.getTipElement()).hasClass(m.SHOW))return void this._leave(null,this);this._enter(null,this)}},h.prototype.dispose=function(){clearTimeout(this._timeout),this.cleanupTether(),t.removeData(this.element,this.constructor.DATA_KEY),t(this.element).off(this.constructor.EVENT_KEY),t(this.element).closest(".modal").off("hide.bs.modal"),this.tip&&t(this.tip).remove(),this._isEnabled=null,this._timeout=null,this._hoverState=null,this._activeTrigger=null,this._tether=null,this.element=null,this.config=null,this.tip=null},h.prototype.show=function(){var e=this;if("none"===t(this.element).css("display"))throw new Error("Please use show on visible elements");var n=t.Event(this.constructor.Event.SHOW);if(this.isWithContent()&&this._isEnabled){if(this._isTransitioning)throw new Error("Tooltip is transitioning");t(this.element).trigger(n);var i=t.contains(this.element.ownerDocument.documentElement,this.element);if(n.isDefaultPrevented()||!i)return;var o=this.getTipElement(),s=r.getUID(this.constructor.NAME);o.setAttribute("id",s),this.element.setAttribute("aria-describedby",s),this.setContent(),this.config.animation&&t(o).addClass(m.FADE);var a="function"==typeof this.config.placement?this.config.placement.call(this,o,this.element):this.config.placement,l=this._getAttachment(a),c=this.config.container===!1?document.body:t(this.config.container);t(o).data(this.constructor.DATA_KEY,this).appendTo(c),t(this.element).trigger(this.constructor.Event.INSERTED),this._tether=new Tether({attachment:l,element:o,target:this.element,classes:v,classPrefix:u,offset:this.config.offset,constraints:this.config.constraints,addTargetClasses:!1}),r.reflow(o),this._tether.position(),t(o).addClass(m.SHOW);var d=function(){var n=e._hoverState;e._hoverState=null,e._isTransitioning=!1,t(e.element).trigger(e.constructor.Event.SHOWN),n===g.OUT&&e._leave(null,e)};if(r.supportsTransitionEnd()&&t(this.tip).hasClass(m.FADE))return this._isTransitioning=!0,void t(this.tip).one(r.TRANSITION_END,d).emulateTransitionEnd(h._TRANSITION_DURATION);d()}},h.prototype.hide=function(e){var n=this,i=this.getTipElement(),o=t.Event(this.constructor.Event.HIDE);if(this._isTransitioning)throw new Error("Tooltip is transitioning");var s=function(){n._hoverState!==g.SHOW&&i.parentNode&&i.parentNode.removeChild(i),n.element.removeAttribute("aria-describedby"),t(n.element).trigger(n.constructor.Event.HIDDEN),n._isTransitioning=!1,n.cleanupTether(),e&&e()};t(this.element).trigger(o),o.isDefaultPrevented()||(t(i).removeClass(m.SHOW),this._activeTrigger[T.CLICK]=!1,this._activeTrigger[T.FOCUS]=!1,this._activeTrigger[T.HOVER]=!1,r.supportsTransitionEnd()&&t(this.tip).hasClass(m.FADE)?(this._isTransitioning=!0,t(i).one(r.TRANSITION_END,s).emulateTransitionEnd(c)):s(),this._hoverState="")},h.prototype.isWithContent=function(){return Boolean(this.getTitle())},h.prototype.getTipElement=function(){return this.tip=this.tip||t(this.config.template)[0]},h.prototype.setContent=function(){var e=t(this.getTipElement());this.setElementContent(e.find(E.TOOLTIP_INNER),this.getTitle()),e.removeClass(m.FADE+" "+m.SHOW),this.cleanupTether()},h.prototype.setElementContent=function(e,n){var o=this.config.html;"object"===("undefined"==typeof n?"undefined":i(n))&&(n.nodeType||n.jquery)?o?t(n).parent().is(e)||e.empty().append(n):e.text(t(n).text()):e[o?"html":"text"](n)},h.prototype.getTitle=function(){var t=this.element.getAttribute("data-original-title");return t||(t="function"==typeof this.config.title?this.config.title.call(this.element):this.config.title),t},h.prototype.cleanupTether=function(){this._tether&&this._tether.destroy()},h.prototype._getAttachment=function(t){return _[t.toUpperCase()]},h.prototype._setListeners=function(){var e=this,n=this.config.trigger.split(" ");n.forEach(function(n){if("click"===n)t(e.element).on(e.constructor.Event.CLICK,e.config.selector,function(t){return e.toggle(t)});else if(n!==T.MANUAL){var i=n===T.HOVER?e.constructor.Event.MOUSEENTER:e.constructor.Event.FOCUSIN,o=n===T.HOVER?e.constructor.Event.MOUSELEAVE:e.constructor.Event.FOCUSOUT;t(e.element).on(i,e.config.selector,function(t){return e._enter(t)}).on(o,e.config.selector,function(t){return e._leave(t)})}t(e.element).closest(".modal").on("hide.bs.modal",function(){return e.hide()})}),this.config.selector?this.config=t.extend({},this.config,{trigger:"manual",selector:""}):this._fixTitle()},h.prototype._fixTitle=function(){var t=i(this.element.getAttribute("data-original-title"));(this.element.getAttribute("title")||"string"!==t)&&(this.element.setAttribute("data-original-title",this.element.getAttribute("title")||""),this.element.setAttribute("title",""))},h.prototype._enter=function(e,n){var i=this.constructor.DATA_KEY;return n=n||t(e.currentTarget).data(i),n||(n=new this.constructor(e.currentTarget,this._getDelegateConfig()),t(e.currentTarget).data(i,n)),e&&(n._activeTrigger["focusin"===e.type?T.FOCUS:T.HOVER]=!0),t(n.getTipElement()).hasClass(m.SHOW)||n._hoverState===g.SHOW?void(n._hoverState=g.SHOW):(clearTimeout(n._timeout),n._hoverState=g.SHOW,n.config.delay&&n.config.delay.show?void(n._timeout=setTimeout(function(){n._hoverState===g.SHOW&&n.show()},n.config.delay.show)):void n.show())},h.prototype._leave=function(e,n){var i=this.constructor.DATA_KEY;if(n=n||t(e.currentTarget).data(i),n||(n=new this.constructor(e.currentTarget,this._getDelegateConfig()),t(e.currentTarget).data(i,n)),e&&(n._activeTrigger["focusout"===e.type?T.FOCUS:T.HOVER]=!1),!n._isWithActiveTrigger())return clearTimeout(n._timeout),n._hoverState=g.OUT,n.config.delay&&n.config.delay.hide?void(n._timeout=setTimeout(function(){n._hoverState===g.OUT&&n.hide()},n.config.delay.hide)):void n.hide()},h.prototype._isWithActiveTrigger=function(){for(var t in this._activeTrigger)if(this._activeTrigger[t])return!0;return!1},h.prototype._getConfig=function(n){return n=t.extend({},this.constructor.Default,t(this.element).data(),n),n.delay&&"number"==typeof n.delay&&(n.delay={show:n.delay,hide:n.delay}),r.typeCheckConfig(e,n,this.constructor.DefaultType),n},h.prototype._getDelegateConfig=function(){var t={};if(this.config)for(var e in this.config)this.constructor.Default[e]!==this.config[e]&&(t[e]=this.config[e]);return t},h._jQueryInterface=function(e){return this.each(function(){var n=t(this).data(a),o="object"===("undefined"==typeof e?"undefined":i(e))&&e;if((n||!/dispose|hide/.test(e))&&(n||(n=new h(this,o),t(this).data(a,n)),"string"==typeof e)){if(void 0===n[e])throw new Error('No method named "'+e+'"');n[e]()}})},o(h,null,[{key:"VERSION",get:function(){return s}},{key:"Default",get:function(){return d}},{key:"NAME",get:function(){return e}},{key:"DATA_KEY",get:function(){return a}},{key:"Event",get:function(){return p}},{key:"EVENT_KEY",get:function(){return l}},{key:"DefaultType",get:function(){return f}}]),h}();return t.fn[e]=I._jQueryInterface,t.fn[e].Constructor=I,t.fn[e].noConflict=function(){return t.fn[e]=h,I._jQueryInterface},I}(jQuery));(function(r){var a="popover",l="4.0.0-alpha.6",h="bs.popover",c="."+h,u=r.fn[a],d=r.extend({},s.Default,{placement:"right",trigger:"click",content:"",template:'<div class="popover" role="tooltip"><h3 class="popover-title"></h3><div class="popover-content"></div></div>'}),f=r.extend({},s.DefaultType,{content:"(string|element|function)"}),_={FADE:"fade",SHOW:"show"},g={TITLE:".popover-title",CONTENT:".popover-content"},p={HIDE:"hide"+c,HIDDEN:"hidden"+c,SHOW:"show"+c,SHOWN:"shown"+c,INSERTED:"inserted"+c,CLICK:"click"+c,FOCUSIN:"focusin"+c,FOCUSOUT:"focusout"+c,MOUSEENTER:"mouseenter"+c,MOUSELEAVE:"mouseleave"+c},m=function(s){function u(){return n(this,u),t(this,s.apply(this,arguments))}return e(u,s),u.prototype.isWithContent=function(){return this.getTitle()||this._getContent()},u.prototype.getTipElement=function(){return this.tip=this.tip||r(this.config.template)[0]},u.prototype.setContent=function(){var t=r(this.getTipElement());this.setElementContent(t.find(g.TITLE),this.getTitle()),this.setElementContent(t.find(g.CONTENT),this._getContent()),t.removeClass(_.FADE+" "+_.SHOW),this.cleanupTether()},u.prototype._getContent=function(){return this.element.getAttribute("data-content")||("function"==typeof this.config.content?this.config.content.call(this.element):this.config.content)},u._jQueryInterface=function(t){return this.each(function(){var e=r(this).data(h),n="object"===("undefined"==typeof t?"undefined":i(t))?t:null;if((e||!/destroy|hide/.test(t))&&(e||(e=new u(this,n),r(this).data(h,e)),"string"==typeof t)){if(void 0===e[t])throw new Error('No method named "'+t+'"');e[t]()}})},o(u,null,[{key:"VERSION",get:function(){return l}},{key:"Default",get:function(){return d}},{key:"NAME",get:function(){return a}},{key:"DATA_KEY",get:function(){return h}},{key:"Event",get:function(){return p}},{key:"EVENT_KEY",get:function(){return c}},{key:"DefaultType",get:function(){return f}}]),u}(s);return r.fn[a]=m._jQueryInterface,r.fn[a].Constructor=m,r.fn[a].noConflict=function(){return r.fn[a]=u,m._jQueryInterface},m})(jQuery)}();
-/*!
- * Flickity PACKAGED v2.0.5
- * Touch, responsive, flickable carousels
- *
- * Licensed GPLv3 for open source use
- * or Flickity Commercial License for commercial use
- *
- * http://flickity.metafizzy.co
- * Copyright 2016 Metafizzy
- */
-
-!function(t,e){"function"==typeof define&&define.amd?define("jquery-bridget/jquery-bridget",["jquery"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("jquery")):t.jQueryBridget=e(t,t.jQuery)}(window,function(t,e){"use strict";function i(i,o,a){function l(t,e,n){var s,o="$()."+i+'("'+e+'")';return t.each(function(t,l){var h=a.data(l,i);if(!h)return void r(i+" not initialized. Cannot call methods, i.e. "+o);var c=h[e];if(!c||"_"==e.charAt(0))return void r(o+" is not a valid method");var d=c.apply(h,n);s=void 0===s?d:s}),void 0!==s?s:t}function h(t,e){t.each(function(t,n){var s=a.data(n,i);s?(s.option(e),s._init()):(s=new o(n,e),a.data(n,i,s))})}a=a||e||t.jQuery,a&&(o.prototype.option||(o.prototype.option=function(t){a.isPlainObject(t)&&(this.options=a.extend(!0,this.options,t))}),a.fn[i]=function(t){if("string"==typeof t){var e=s.call(arguments,1);return l(this,t,e)}return h(this,t),this},n(a))}function n(t){!t||t&&t.bridget||(t.bridget=i)}var s=Array.prototype.slice,o=t.console,r="undefined"==typeof o?function(){}:function(t){o.error(t)};return n(e||t.jQuery),i}),function(t,e){"function"==typeof define&&define.amd?define("ev-emitter/ev-emitter",e):"object"==typeof module&&module.exports?module.exports=e():t.EvEmitter=e()}("undefined"!=typeof window?window:this,function(){function t(){}var e=t.prototype;return e.on=function(t,e){if(t&&e){var i=this._events=this._events||{},n=i[t]=i[t]||[];return n.indexOf(e)==-1&&n.push(e),this}},e.once=function(t,e){if(t&&e){this.on(t,e);var i=this._onceEvents=this._onceEvents||{},n=i[t]=i[t]||{};return n[e]=!0,this}},e.off=function(t,e){var i=this._events&&this._events[t];if(i&&i.length){var n=i.indexOf(e);return n!=-1&&i.splice(n,1),this}},e.emitEvent=function(t,e){var i=this._events&&this._events[t];if(i&&i.length){var n=0,s=i[n];e=e||[];for(var o=this._onceEvents&&this._onceEvents[t];s;){var r=o&&o[s];r&&(this.off(t,s),delete o[s]),s.apply(this,e),n+=r?0:1,s=i[n]}return this}},t}),function(t,e){"use strict";"function"==typeof define&&define.amd?define("get-size/get-size",[],function(){return e()}):"object"==typeof module&&module.exports?module.exports=e():t.getSize=e()}(window,function(){"use strict";function t(t){var e=parseFloat(t),i=t.indexOf("%")==-1&&!isNaN(e);return i&&e}function e(){}function i(){for(var t={width:0,height:0,innerWidth:0,innerHeight:0,outerWidth:0,outerHeight:0},e=0;e<h;e++){var i=l[e];t[i]=0}return t}function n(t){var e=getComputedStyle(t);return e||a("Style returned "+e+". Are you running this code in a hidden iframe on Firefox? See http://bit.ly/getsizebug1"),e}function s(){if(!c){c=!0;var e=document.createElement("div");e.style.width="200px",e.style.padding="1px 2px 3px 4px",e.style.borderStyle="solid",e.style.borderWidth="1px 2px 3px 4px",e.style.boxSizing="border-box";var i=document.body||document.documentElement;i.appendChild(e);var s=n(e);o.isBoxSizeOuter=r=200==t(s.width),i.removeChild(e)}}function o(e){if(s(),"string"==typeof e&&(e=document.querySelector(e)),e&&"object"==typeof e&&e.nodeType){var o=n(e);if("none"==o.display)return i();var a={};a.width=e.offsetWidth,a.height=e.offsetHeight;for(var c=a.isBorderBox="border-box"==o.boxSizing,d=0;d<h;d++){var u=l[d],f=o[u],p=parseFloat(f);a[u]=isNaN(p)?0:p}var v=a.paddingLeft+a.paddingRight,g=a.paddingTop+a.paddingBottom,m=a.marginLeft+a.marginRight,y=a.marginTop+a.marginBottom,S=a.borderLeftWidth+a.borderRightWidth,E=a.borderTopWidth+a.borderBottomWidth,b=c&&r,x=t(o.width);x!==!1&&(a.width=x+(b?0:v+S));var C=t(o.height);return C!==!1&&(a.height=C+(b?0:g+E)),a.innerWidth=a.width-(v+S),a.innerHeight=a.height-(g+E),a.outerWidth=a.width+m,a.outerHeight=a.height+y,a}}var r,a="undefined"==typeof console?e:function(t){console.error(t)},l=["paddingLeft","paddingRight","paddingTop","paddingBottom","marginLeft","marginRight","marginTop","marginBottom","borderLeftWidth","borderRightWidth","borderTopWidth","borderBottomWidth"],h=l.length,c=!1;return o}),function(t,e){"use strict";"function"==typeof define&&define.amd?define("desandro-matches-selector/matches-selector",e):"object"==typeof module&&module.exports?module.exports=e():t.matchesSelector=e()}(window,function(){"use strict";var t=function(){var t=Element.prototype;if(t.matches)return"matches";if(t.matchesSelector)return"matchesSelector";for(var e=["webkit","moz","ms","o"],i=0;i<e.length;i++){var n=e[i],s=n+"MatchesSelector";if(t[s])return s}}();return function(e,i){return e[t](i)}}),function(t,e){"function"==typeof define&&define.amd?define("fizzy-ui-utils/utils",["desandro-matches-selector/matches-selector"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("desandro-matches-selector")):t.fizzyUIUtils=e(t,t.matchesSelector)}(window,function(t,e){var i={};i.extend=function(t,e){for(var i in e)t[i]=e[i];return t},i.modulo=function(t,e){return(t%e+e)%e},i.makeArray=function(t){var e=[];if(Array.isArray(t))e=t;else if(t&&"number"==typeof t.length)for(var i=0;i<t.length;i++)e.push(t[i]);else e.push(t);return e},i.removeFrom=function(t,e){var i=t.indexOf(e);i!=-1&&t.splice(i,1)},i.getParent=function(t,i){for(;t!=document.body;)if(t=t.parentNode,e(t,i))return t},i.getQueryElement=function(t){return"string"==typeof t?document.querySelector(t):t},i.handleEvent=function(t){var e="on"+t.type;this[e]&&this[e](t)},i.filterFindElements=function(t,n){t=i.makeArray(t);var s=[];return t.forEach(function(t){if(t instanceof HTMLElement){if(!n)return void s.push(t);e(t,n)&&s.push(t);for(var i=t.querySelectorAll(n),o=0;o<i.length;o++)s.push(i[o])}}),s},i.debounceMethod=function(t,e,i){var n=t.prototype[e],s=e+"Timeout";t.prototype[e]=function(){var t=this[s];t&&clearTimeout(t);var e=arguments,o=this;this[s]=setTimeout(function(){n.apply(o,e),delete o[s]},i||100)}},i.docReady=function(t){var e=document.readyState;"complete"==e||"interactive"==e?setTimeout(t):document.addEventListener("DOMContentLoaded",t)},i.toDashed=function(t){return t.replace(/(.)([A-Z])/g,function(t,e,i){return e+"-"+i}).toLowerCase()};var n=t.console;return i.htmlInit=function(e,s){i.docReady(function(){var o=i.toDashed(s),r="data-"+o,a=document.querySelectorAll("["+r+"]"),l=document.querySelectorAll(".js-"+o),h=i.makeArray(a).concat(i.makeArray(l)),c=r+"-options",d=t.jQuery;h.forEach(function(t){var i,o=t.getAttribute(r)||t.getAttribute(c);try{i=o&&JSON.parse(o)}catch(a){return void(n&&n.error("Error parsing "+r+" on "+t.className+": "+a))}var l=new e(t,i);d&&d.data(t,s,l)})})},i}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/cell",["get-size/get-size"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("get-size")):(t.Flickity=t.Flickity||{},t.Flickity.Cell=e(t,t.getSize))}(window,function(t,e){function i(t,e){this.element=t,this.parent=e,this.create()}var n=i.prototype;return n.create=function(){this.element.style.position="absolute",this.x=0,this.shift=0},n.destroy=function(){this.element.style.position="";var t=this.parent.originSide;this.element.style[t]=""},n.getSize=function(){this.size=e(this.element)},n.setPosition=function(t){this.x=t,this.updateTarget(),this.renderPosition(t)},n.updateTarget=n.setDefaultTarget=function(){var t="left"==this.parent.originSide?"marginLeft":"marginRight";this.target=this.x+this.size[t]+this.size.width*this.parent.cellAlign},n.renderPosition=function(t){var e=this.parent.originSide;this.element.style[e]=this.parent.getPositionValue(t)},n.wrapShift=function(t){this.shift=t,this.renderPosition(this.x+this.parent.slideableWidth*t)},n.remove=function(){this.element.parentNode.removeChild(this.element)},i}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/slide",e):"object"==typeof module&&module.exports?module.exports=e():(t.Flickity=t.Flickity||{},t.Flickity.Slide=e())}(window,function(){"use strict";function t(t){this.parent=t,this.isOriginLeft="left"==t.originSide,this.cells=[],this.outerWidth=0,this.height=0}var e=t.prototype;return e.addCell=function(t){if(this.cells.push(t),this.outerWidth+=t.size.outerWidth,this.height=Math.max(t.size.outerHeight,this.height),1==this.cells.length){this.x=t.x;var e=this.isOriginLeft?"marginLeft":"marginRight";this.firstMargin=t.size[e]}},e.updateTarget=function(){var t=this.isOriginLeft?"marginRight":"marginLeft",e=this.getLastCell(),i=e?e.size[t]:0,n=this.outerWidth-(this.firstMargin+i);this.target=this.x+this.firstMargin+n*this.parent.cellAlign},e.getLastCell=function(){return this.cells[this.cells.length-1]},e.select=function(){this.changeSelectedClass("add")},e.unselect=function(){this.changeSelectedClass("remove")},e.changeSelectedClass=function(t){this.cells.forEach(function(e){e.element.classList[t]("is-selected")})},e.getCellElements=function(){return this.cells.map(function(t){return t.element})},t}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/animate",["fizzy-ui-utils/utils"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("fizzy-ui-utils")):(t.Flickity=t.Flickity||{},t.Flickity.animatePrototype=e(t,t.fizzyUIUtils))}(window,function(t,e){var i=t.requestAnimationFrame||t.webkitRequestAnimationFrame,n=0;i||(i=function(t){var e=(new Date).getTime(),i=Math.max(0,16-(e-n)),s=setTimeout(t,i);return n=e+i,s});var s={};s.startAnimation=function(){this.isAnimating||(this.isAnimating=!0,this.restingFrames=0,this.animate())},s.animate=function(){this.applyDragForce(),this.applySelectedAttraction();var t=this.x;if(this.integratePhysics(),this.positionSlider(),this.settle(t),this.isAnimating){var e=this;i(function(){e.animate()})}};var o=function(){var t=document.documentElement.style;return"string"==typeof t.transform?"transform":"WebkitTransform"}();return s.positionSlider=function(){var t=this.x;this.options.wrapAround&&this.cells.length>1&&(t=e.modulo(t,this.slideableWidth),t-=this.slideableWidth,this.shiftWrapCells(t)),t+=this.cursorPosition,t=this.options.rightToLeft&&o?-t:t;var i=this.getPositionValue(t);this.slider.style[o]=this.isAnimating?"translate3d("+i+",0,0)":"translateX("+i+")";var n=this.slides[0];if(n){var s=-this.x-n.target,r=s/this.slidesWidth;this.dispatchEvent("scroll",null,[r,s])}},s.positionSliderAtSelected=function(){this.cells.length&&(this.x=-this.selectedSlide.target,this.positionSlider())},s.getPositionValue=function(t){return this.options.percentPosition?.01*Math.round(t/this.size.innerWidth*1e4)+"%":Math.round(t)+"px"},s.settle=function(t){this.isPointerDown||Math.round(100*this.x)!=Math.round(100*t)||this.restingFrames++,this.restingFrames>2&&(this.isAnimating=!1,delete this.isFreeScrolling,this.positionSlider(),this.dispatchEvent("settle"))},s.shiftWrapCells=function(t){var e=this.cursorPosition+t;this._shiftCells(this.beforeShiftCells,e,-1);var i=this.size.innerWidth-(t+this.slideableWidth+this.cursorPosition);this._shiftCells(this.afterShiftCells,i,1)},s._shiftCells=function(t,e,i){for(var n=0;n<t.length;n++){var s=t[n],o=e>0?i:0;s.wrapShift(o),e-=s.size.outerWidth}},s._unshiftCells=function(t){if(t&&t.length)for(var e=0;e<t.length;e++)t[e].wrapShift(0)},s.integratePhysics=function(){this.x+=this.velocity,this.velocity*=this.getFrictionFactor()},s.applyForce=function(t){this.velocity+=t},s.getFrictionFactor=function(){return 1-this.options[this.isFreeScrolling?"freeScrollFriction":"friction"]},s.getRestingPosition=function(){return this.x+this.velocity/(1-this.getFrictionFactor())},s.applyDragForce=function(){if(this.isPointerDown){var t=this.dragX-this.x,e=t-this.velocity;this.applyForce(e)}},s.applySelectedAttraction=function(){if(!this.isPointerDown&&!this.isFreeScrolling&&this.cells.length){var t=this.selectedSlide.target*-1-this.x,e=t*this.options.selectedAttraction;this.applyForce(e)}},s}),function(t,e){if("function"==typeof define&&define.amd)define("flickity/js/flickity",["ev-emitter/ev-emitter","get-size/get-size","fizzy-ui-utils/utils","./cell","./slide","./animate"],function(i,n,s,o,r,a){return e(t,i,n,s,o,r,a)});else if("object"==typeof module&&module.exports)module.exports=e(t,require("ev-emitter"),require("get-size"),require("fizzy-ui-utils"),require("./cell"),require("./slide"),require("./animate"));else{var i=t.Flickity;t.Flickity=e(t,t.EvEmitter,t.getSize,t.fizzyUIUtils,i.Cell,i.Slide,i.animatePrototype)}}(window,function(t,e,i,n,s,o,r){function a(t,e){for(t=n.makeArray(t);t.length;)e.appendChild(t.shift())}function l(t,e){var i=n.getQueryElement(t);if(!i)return void(d&&d.error("Bad element for Flickity: "+(i||t)));if(this.element=i,this.element.flickityGUID){var s=f[this.element.flickityGUID];return s.option(e),s}h&&(this.$element=h(this.element)),this.options=n.extend({},this.constructor.defaults),this.option(e),this._create()}var h=t.jQuery,c=t.getComputedStyle,d=t.console,u=0,f={};l.defaults={accessibility:!0,cellAlign:"center",freeScrollFriction:.075,friction:.28,namespaceJQueryEvents:!0,percentPosition:!0,resize:!0,selectedAttraction:.025,setGallerySize:!0},l.createMethods=[];var p=l.prototype;n.extend(p,e.prototype),p._create=function(){var e=this.guid=++u;this.element.flickityGUID=e,f[e]=this,this.selectedIndex=0,this.restingFrames=0,this.x=0,this.velocity=0,this.originSide=this.options.rightToLeft?"right":"left",this.viewport=document.createElement("div"),this.viewport.className="flickity-viewport",this._createSlider(),(this.options.resize||this.options.watchCSS)&&t.addEventListener("resize",this),l.createMethods.forEach(function(t){this[t]()},this),this.options.watchCSS?this.watchCSS():this.activate()},p.option=function(t){n.extend(this.options,t)},p.activate=function(){if(!this.isActive){this.isActive=!0,this.element.classList.add("flickity-enabled"),this.options.rightToLeft&&this.element.classList.add("flickity-rtl"),this.getSize();var t=this._filterFindCellElements(this.element.children);a(t,this.slider),this.viewport.appendChild(this.slider),this.element.appendChild(this.viewport),this.reloadCells(),this.options.accessibility&&(this.element.tabIndex=0,this.element.addEventListener("keydown",this)),this.emitEvent("activate");var e,i=this.options.initialIndex;e=this.isInitActivated?this.selectedIndex:void 0!==i&&this.cells[i]?i:0,this.select(e,!1,!0),this.isInitActivated=!0}},p._createSlider=function(){var t=document.createElement("div");t.className="flickity-slider",t.style[this.originSide]=0,this.slider=t},p._filterFindCellElements=function(t){return n.filterFindElements(t,this.options.cellSelector)},p.reloadCells=function(){this.cells=this._makeCells(this.slider.children),this.positionCells(),this._getWrapShiftCells(),this.setGallerySize()},p._makeCells=function(t){var e=this._filterFindCellElements(t),i=e.map(function(t){return new s(t,this)},this);return i},p.getLastCell=function(){return this.cells[this.cells.length-1]},p.getLastSlide=function(){return this.slides[this.slides.length-1]},p.positionCells=function(){this._sizeCells(this.cells),this._positionCells(0)},p._positionCells=function(t){t=t||0,this.maxCellHeight=t?this.maxCellHeight||0:0;var e=0;if(t>0){var i=this.cells[t-1];e=i.x+i.size.outerWidth}for(var n=this.cells.length,s=t;s<n;s++){var o=this.cells[s];o.setPosition(e),e+=o.size.outerWidth,this.maxCellHeight=Math.max(o.size.outerHeight,this.maxCellHeight)}this.slideableWidth=e,this.updateSlides(),this._containSlides(),this.slidesWidth=n?this.getLastSlide().target-this.slides[0].target:0},p._sizeCells=function(t){t.forEach(function(t){t.getSize()})},p.updateSlides=function(){if(this.slides=[],this.cells.length){var t=new o(this);this.slides.push(t);var e="left"==this.originSide,i=e?"marginRight":"marginLeft",n=this._getCanCellFit();this.cells.forEach(function(e,s){if(!t.cells.length)return void t.addCell(e);var r=t.outerWidth-t.firstMargin+(e.size.outerWidth-e.size[i]);n.call(this,s,r)?t.addCell(e):(t.updateTarget(),t=new o(this),this.slides.push(t),t.addCell(e))},this),t.updateTarget(),this.updateSelectedSlide()}},p._getCanCellFit=function(){var t=this.options.groupCells;if(!t)return function(){return!1};if("number"==typeof t){var e=parseInt(t,10);return function(t){return t%e!==0}}var i="string"==typeof t&&t.match(/^(\d+)%$/),n=i?parseInt(i[1],10)/100:1;return function(t,e){return e<=(this.size.innerWidth+1)*n}},p._init=p.reposition=function(){this.positionCells(),this.positionSliderAtSelected()},p.getSize=function(){this.size=i(this.element),this.setCellAlign(),this.cursorPosition=this.size.innerWidth*this.cellAlign};var v={center:{left:.5,right:.5},left:{left:0,right:1},right:{right:0,left:1}};return p.setCellAlign=function(){var t=v[this.options.cellAlign];this.cellAlign=t?t[this.originSide]:this.options.cellAlign},p.setGallerySize=function(){if(this.options.setGallerySize){var t=this.options.adaptiveHeight&&this.selectedSlide?this.selectedSlide.height:this.maxCellHeight;this.viewport.style.height=t+"px"}},p._getWrapShiftCells=function(){if(this.options.wrapAround){this._unshiftCells(this.beforeShiftCells),this._unshiftCells(this.afterShiftCells);var t=this.cursorPosition,e=this.cells.length-1;this.beforeShiftCells=this._getGapCells(t,e,-1),t=this.size.innerWidth-this.cursorPosition,this.afterShiftCells=this._getGapCells(t,0,1)}},p._getGapCells=function(t,e,i){for(var n=[];t>0;){var s=this.cells[e];if(!s)break;n.push(s),e+=i,t-=s.size.outerWidth}return n},p._containSlides=function(){if(this.options.contain&&!this.options.wrapAround&&this.cells.length){var t=this.options.rightToLeft,e=t?"marginRight":"marginLeft",i=t?"marginLeft":"marginRight",n=this.slideableWidth-this.getLastCell().size[i],s=n<this.size.innerWidth,o=this.cursorPosition+this.cells[0].size[e],r=n-this.size.innerWidth*(1-this.cellAlign);this.slides.forEach(function(t){s?t.target=n*this.cellAlign:(t.target=Math.max(t.target,o),t.target=Math.min(t.target,r))},this)}},p.dispatchEvent=function(t,e,i){var n=e?[e].concat(i):i;if(this.emitEvent(t,n),h&&this.$element){t+=this.options.namespaceJQueryEvents?".flickity":"";var s=t;if(e){var o=h.Event(e);o.type=t,s=o}this.$element.trigger(s,i)}},p.select=function(t,e,i){this.isActive&&(t=parseInt(t,10),this._wrapSelect(t),(this.options.wrapAround||e)&&(t=n.modulo(t,this.slides.length)),this.slides[t]&&(this.selectedIndex=t,this.updateSelectedSlide(),i?this.positionSliderAtSelected():this.startAnimation(),this.options.adaptiveHeight&&this.setGallerySize(),this.dispatchEvent("select"),this.dispatchEvent("cellSelect")))},p._wrapSelect=function(t){var e=this.slides.length,i=this.options.wrapAround&&e>1;if(!i)return t;var s=n.modulo(t,e),o=Math.abs(s-this.selectedIndex),r=Math.abs(s+e-this.selectedIndex),a=Math.abs(s-e-this.selectedIndex);!this.isDragSelect&&r<o?t+=e:!this.isDragSelect&&a<o&&(t-=e),t<0?this.x-=this.slideableWidth:t>=e&&(this.x+=this.slideableWidth)},p.previous=function(t,e){this.select(this.selectedIndex-1,t,e)},p.next=function(t,e){this.select(this.selectedIndex+1,t,e)},p.updateSelectedSlide=function(){var t=this.slides[this.selectedIndex];t&&(this.unselectSelectedSlide(),this.selectedSlide=t,t.select(),this.selectedCells=t.cells,this.selectedElements=t.getCellElements(),this.selectedCell=t.cells[0],this.selectedElement=this.selectedElements[0])},p.unselectSelectedSlide=function(){this.selectedSlide&&this.selectedSlide.unselect()},p.selectCell=function(t,e,i){var n;"number"==typeof t?n=this.cells[t]:("string"==typeof t&&(t=this.element.querySelector(t)),n=this.getCell(t));for(var s=0;n&&s<this.slides.length;s++){var o=this.slides[s],r=o.cells.indexOf(n);if(r!=-1)return void this.select(s,e,i)}},p.getCell=function(t){for(var e=0;e<this.cells.length;e++){var i=this.cells[e];if(i.element==t)return i}},p.getCells=function(t){t=n.makeArray(t);var e=[];return t.forEach(function(t){var i=this.getCell(t);i&&e.push(i)},this),e},p.getCellElements=function(){return this.cells.map(function(t){return t.element})},p.getParentCell=function(t){var e=this.getCell(t);return e?e:(t=n.getParent(t,".flickity-slider > *"),this.getCell(t))},p.getAdjacentCellElements=function(t,e){if(!t)return this.selectedSlide.getCellElements();e=void 0===e?this.selectedIndex:e;var i=this.slides.length;if(1+2*t>=i)return this.getCellElements();for(var s=[],o=e-t;o<=e+t;o++){var r=this.options.wrapAround?n.modulo(o,i):o,a=this.slides[r];a&&(s=s.concat(a.getCellElements()))}return s},p.uiChange=function(){this.emitEvent("uiChange")},p.childUIPointerDown=function(t){this.emitEvent("childUIPointerDown",[t])},p.onresize=function(){this.watchCSS(),this.resize()},n.debounceMethod(l,"onresize",150),p.resize=function(){if(this.isActive){this.getSize(),this.options.wrapAround&&(this.x=n.modulo(this.x,this.slideableWidth)),this.positionCells(),this._getWrapShiftCells(),this.setGallerySize(),this.emitEvent("resize");var t=this.selectedElements&&this.selectedElements[0];this.selectCell(t,!1,!0)}},p.watchCSS=function(){var t=this.options.watchCSS;if(t){var e=c(this.element,":after").content;e.indexOf("flickity")!=-1?this.activate():this.deactivate()}},p.onkeydown=function(t){if(this.options.accessibility&&(!document.activeElement||document.activeElement==this.element))if(37==t.keyCode){var e=this.options.rightToLeft?"next":"previous";this.uiChange(),this[e]()}else if(39==t.keyCode){var i=this.options.rightToLeft?"previous":"next";this.uiChange(),this[i]()}},p.deactivate=function(){this.isActive&&(this.element.classList.remove("flickity-enabled"),this.element.classList.remove("flickity-rtl"),this.cells.forEach(function(t){t.destroy()}),this.unselectSelectedSlide(),this.element.removeChild(this.viewport),a(this.slider.children,this.element),this.options.accessibility&&(this.element.removeAttribute("tabIndex"),this.element.removeEventListener("keydown",this)),this.isActive=!1,this.emitEvent("deactivate"))},p.destroy=function(){this.deactivate(),t.removeEventListener("resize",this),this.emitEvent("destroy"),h&&this.$element&&h.removeData(this.element,"flickity"),delete this.element.flickityGUID,delete f[this.guid]},n.extend(p,r),l.data=function(t){t=n.getQueryElement(t);var e=t&&t.flickityGUID;return e&&f[e]},n.htmlInit(l,"flickity"),h&&h.bridget&&h.bridget("flickity",l),l.Cell=s,l}),function(t,e){"function"==typeof define&&define.amd?define("unipointer/unipointer",["ev-emitter/ev-emitter"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("ev-emitter")):t.Unipointer=e(t,t.EvEmitter)}(window,function(t,e){function i(){}function n(){}var s=n.prototype=Object.create(e.prototype);s.bindStartEvent=function(t){this._bindStartEvent(t,!0)},s.unbindStartEvent=function(t){this._bindStartEvent(t,!1)},s._bindStartEvent=function(e,i){i=void 0===i||!!i;var n=i?"addEventListener":"removeEventListener";t.navigator.pointerEnabled?e[n]("pointerdown",this):t.navigator.msPointerEnabled?e[n]("MSPointerDown",this):(e[n]("mousedown",this),e[n]("touchstart",this))},s.handleEvent=function(t){var e="on"+t.type;this[e]&&this[e](t)},s.getTouch=function(t){for(var e=0;e<t.length;e++){var i=t[e];if(i.identifier==this.pointerIdentifier)return i}},s.onmousedown=function(t){var e=t.button;e&&0!==e&&1!==e||this._pointerDown(t,t)},s.ontouchstart=function(t){this._pointerDown(t,t.changedTouches[0])},s.onMSPointerDown=s.onpointerdown=function(t){this._pointerDown(t,t)},s._pointerDown=function(t,e){this.isPointerDown||(this.isPointerDown=!0,this.pointerIdentifier=void 0!==e.pointerId?e.pointerId:e.identifier,this.pointerDown(t,e))},s.pointerDown=function(t,e){this._bindPostStartEvents(t),this.emitEvent("pointerDown",[t,e])};var o={mousedown:["mousemove","mouseup"],touchstart:["touchmove","touchend","touchcancel"],pointerdown:["pointermove","pointerup","pointercancel"],MSPointerDown:["MSPointerMove","MSPointerUp","MSPointerCancel"]};return s._bindPostStartEvents=function(e){if(e){var i=o[e.type];i.forEach(function(e){t.addEventListener(e,this)},this),this._boundPointerEvents=i}},s._unbindPostStartEvents=function(){this._boundPointerEvents&&(this._boundPointerEvents.forEach(function(e){t.removeEventListener(e,this)},this),delete this._boundPointerEvents)},s.onmousemove=function(t){this._pointerMove(t,t)},s.onMSPointerMove=s.onpointermove=function(t){t.pointerId==this.pointerIdentifier&&this._pointerMove(t,t)},s.ontouchmove=function(t){var e=this.getTouch(t.changedTouches);e&&this._pointerMove(t,e)},s._pointerMove=function(t,e){this.pointerMove(t,e)},s.pointerMove=function(t,e){this.emitEvent("pointerMove",[t,e])},s.onmouseup=function(t){this._pointerUp(t,t)},s.onMSPointerUp=s.onpointerup=function(t){t.pointerId==this.pointerIdentifier&&this._pointerUp(t,t)},s.ontouchend=function(t){var e=this.getTouch(t.changedTouches);e&&this._pointerUp(t,e)},s._pointerUp=function(t,e){this._pointerDone(),this.pointerUp(t,e)},s.pointerUp=function(t,e){this.emitEvent("pointerUp",[t,e])},s._pointerDone=function(){this.isPointerDown=!1,delete this.pointerIdentifier,this._unbindPostStartEvents(),this.pointerDone()},s.pointerDone=i,s.onMSPointerCancel=s.onpointercancel=function(t){t.pointerId==this.pointerIdentifier&&this._pointerCancel(t,t)},s.ontouchcancel=function(t){var e=this.getTouch(t.changedTouches);e&&this._pointerCancel(t,e)},s._pointerCancel=function(t,e){this._pointerDone(),this.pointerCancel(t,e)},s.pointerCancel=function(t,e){this.emitEvent("pointerCancel",[t,e])},n.getPointerPoint=function(t){return{x:t.pageX,y:t.pageY}},n}),function(t,e){"function"==typeof define&&define.amd?define("unidragger/unidragger",["unipointer/unipointer"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("unipointer")):t.Unidragger=e(t,t.Unipointer)}(window,function(t,e){function i(){}function n(){}var s=n.prototype=Object.create(e.prototype);s.bindHandles=function(){this._bindHandles(!0)},s.unbindHandles=function(){this._bindHandles(!1)};var o=t.navigator;return s._bindHandles=function(t){t=void 0===t||!!t;var e;e=o.pointerEnabled?function(e){e.style.touchAction=t?"none":""}:o.msPointerEnabled?function(e){e.style.msTouchAction=t?"none":""}:i;for(var n=t?"addEventListener":"removeEventListener",s=0;s<this.handles.length;s++){var r=this.handles[s];this._bindStartEvent(r,t),e(r),r[n]("click",this)}},s.pointerDown=function(t,e){if("INPUT"==t.target.nodeName&&"range"==t.target.type)return this.isPointerDown=!1,void delete this.pointerIdentifier;this._dragPointerDown(t,e);var i=document.activeElement;i&&i.blur&&i.blur(),this._bindPostStartEvents(t),this.emitEvent("pointerDown",[t,e])},s._dragPointerDown=function(t,i){this.pointerDownPoint=e.getPointerPoint(i);var n=this.canPreventDefaultOnPointerDown(t,i);n&&t.preventDefault()},s.canPreventDefaultOnPointerDown=function(t){return"SELECT"!=t.target.nodeName},s.pointerMove=function(t,e){var i=this._dragPointerMove(t,e);this.emitEvent("pointerMove",[t,e,i]),this._dragMove(t,e,i)},s._dragPointerMove=function(t,i){var n=e.getPointerPoint(i),s={x:n.x-this.pointerDownPoint.x,y:n.y-this.pointerDownPoint.y};return!this.isDragging&&this.hasDragStarted(s)&&this._dragStart(t,i),s},s.hasDragStarted=function(t){return Math.abs(t.x)>3||Math.abs(t.y)>3},s.pointerUp=function(t,e){this.emitEvent("pointerUp",[t,e]),this._dragPointerUp(t,e)},s._dragPointerUp=function(t,e){this.isDragging?this._dragEnd(t,e):this._staticClick(t,e)},s._dragStart=function(t,i){this.isDragging=!0,this.dragStartPoint=e.getPointerPoint(i),this.isPreventingClicks=!0,this.dragStart(t,i)},s.dragStart=function(t,e){this.emitEvent("dragStart",[t,e])},s._dragMove=function(t,e,i){this.isDragging&&this.dragMove(t,e,i)},s.dragMove=function(t,e,i){t.preventDefault(),this.emitEvent("dragMove",[t,e,i])},s._dragEnd=function(t,e){this.isDragging=!1,setTimeout(function(){delete this.isPreventingClicks}.bind(this)),this.dragEnd(t,e)},s.dragEnd=function(t,e){this.emitEvent("dragEnd",[t,e])},s.onclick=function(t){this.isPreventingClicks&&t.preventDefault()},s._staticClick=function(t,e){if(!this.isIgnoringMouseUp||"mouseup"!=t.type){var i=t.target.nodeName;"INPUT"!=i&&"TEXTAREA"!=i||t.target.focus(),this.staticClick(t,e),"mouseup"!=t.type&&(this.isIgnoringMouseUp=!0,setTimeout(function(){delete this.isIgnoringMouseUp}.bind(this),400))}},s.staticClick=function(t,e){this.emitEvent("staticClick",[t,e])},n.getPointerPoint=e.getPointerPoint,n}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/drag",["./flickity","unidragger/unidragger","fizzy-ui-utils/utils"],function(i,n,s){return e(t,i,n,s)}):"object"==typeof module&&module.exports?module.exports=e(t,require("./flickity"),require("unidragger"),require("fizzy-ui-utils")):t.Flickity=e(t,t.Flickity,t.Unidragger,t.fizzyUIUtils)}(window,function(t,e,i,n){function s(){return{x:t.pageXOffset,y:t.pageYOffset}}n.extend(e.defaults,{draggable:!0,dragThreshold:3}),e.createMethods.push("_createDrag");var o=e.prototype;n.extend(o,i.prototype);var r="createTouch"in document,a=!1;o._createDrag=function(){this.on("activate",this.bindDrag),this.on("uiChange",this._uiChangeDrag),this.on("childUIPointerDown",this._childUIPointerDownDrag),this.on("deactivate",this.unbindDrag),r&&!a&&(t.addEventListener("touchmove",function(){}),a=!0)},o.bindDrag=function(){this.options.draggable&&!this.isDragBound&&(this.element.classList.add("is-draggable"),this.handles=[this.viewport],this.bindHandles(),this.isDragBound=!0)},o.unbindDrag=function(){this.isDragBound&&(this.element.classList.remove("is-draggable"),this.unbindHandles(),delete this.isDragBound)},o._uiChangeDrag=function(){delete this.isFreeScrolling},o._childUIPointerDownDrag=function(t){t.preventDefault(),this.pointerDownFocus(t)};var l={TEXTAREA:!0,INPUT:!0,OPTION:!0},h={radio:!0,checkbox:!0,button:!0,submit:!0,image:!0,file:!0};o.pointerDown=function(e,i){var n=l[e.target.nodeName]&&!h[e.target.type];if(n)return this.isPointerDown=!1,void delete this.pointerIdentifier;this._dragPointerDown(e,i);var o=document.activeElement;o&&o.blur&&o!=this.element&&o!=document.body&&o.blur(),this.pointerDownFocus(e),this.dragX=this.x,this.viewport.classList.add("is-pointer-down"),this._bindPostStartEvents(e),this.pointerDownScroll=s(),t.addEventListener("scroll",this),this.dispatchEvent("pointerDown",e,[i])};var c={touchstart:!0,MSPointerDown:!0},d={INPUT:!0,SELECT:!0};return o.pointerDownFocus=function(e){if(this.options.accessibility&&!c[e.type]&&!d[e.target.nodeName]){var i=t.pageYOffset;this.element.focus(),t.pageYOffset!=i&&t.scrollTo(t.pageXOffset,i)}},o.canPreventDefaultOnPointerDown=function(t){var e="touchstart"==t.type,i=t.target.nodeName;return!e&&"SELECT"!=i},o.hasDragStarted=function(t){return Math.abs(t.x)>this.options.dragThreshold},o.pointerUp=function(t,e){delete this.isTouchScrolling,this.viewport.classList.remove("is-pointer-down"),this.dispatchEvent("pointerUp",t,[e]),this._dragPointerUp(t,e)},o.pointerDone=function(){t.removeEventListener("scroll",this),delete this.pointerDownScroll},o.dragStart=function(e,i){this.dragStartPosition=this.x,this.startAnimation(),t.removeEventListener("scroll",this),this.dispatchEvent("dragStart",e,[i])},o.pointerMove=function(t,e){var i=this._dragPointerMove(t,e);this.dispatchEvent("pointerMove",t,[e,i]),this._dragMove(t,e,i)},o.dragMove=function(t,e,i){t.preventDefault(),this.previousDragX=this.dragX;var n=this.options.rightToLeft?-1:1,s=this.dragStartPosition+i.x*n;if(!this.options.wrapAround&&this.slides.length){var o=Math.max(-this.slides[0].target,this.dragStartPosition);s=s>o?.5*(s+o):s;var r=Math.min(-this.getLastSlide().target,this.dragStartPosition);s=s<r?.5*(s+r):s}this.dragX=s,this.dragMoveTime=new Date,this.dispatchEvent("dragMove",t,[e,i])},o.dragEnd=function(t,e){this.options.freeScroll&&(this.isFreeScrolling=!0);var i=this.dragEndRestingSelect();if(this.options.freeScroll&&!this.options.wrapAround){var n=this.getRestingPosition();this.isFreeScrolling=-n>this.slides[0].target&&-n<this.getLastSlide().target}else this.options.freeScroll||i!=this.selectedIndex||(i+=this.dragEndBoostSelect());delete this.previousDragX,this.isDragSelect=this.options.wrapAround,this.select(i),delete this.isDragSelect,this.dispatchEvent("dragEnd",t,[e])},o.dragEndRestingSelect=function(){
-var t=this.getRestingPosition(),e=Math.abs(this.getSlideDistance(-t,this.selectedIndex)),i=this._getClosestResting(t,e,1),n=this._getClosestResting(t,e,-1),s=i.distance<n.distance?i.index:n.index;return s},o._getClosestResting=function(t,e,i){for(var n=this.selectedIndex,s=1/0,o=this.options.contain&&!this.options.wrapAround?function(t,e){return t<=e}:function(t,e){return t<e};o(e,s)&&(n+=i,s=e,e=this.getSlideDistance(-t,n),null!==e);)e=Math.abs(e);return{distance:s,index:n-i}},o.getSlideDistance=function(t,e){var i=this.slides.length,s=this.options.wrapAround&&i>1,o=s?n.modulo(e,i):e,r=this.slides[o];if(!r)return null;var a=s?this.slideableWidth*Math.floor(e/i):0;return t-(r.target+a)},o.dragEndBoostSelect=function(){if(void 0===this.previousDragX||!this.dragMoveTime||new Date-this.dragMoveTime>100)return 0;var t=this.getSlideDistance(-this.dragX,this.selectedIndex),e=this.previousDragX-this.dragX;return t>0&&e>0?1:t<0&&e<0?-1:0},o.staticClick=function(t,e){var i=this.getParentCell(t.target),n=i&&i.element,s=i&&this.cells.indexOf(i);this.dispatchEvent("staticClick",t,[e,n,s])},o.onscroll=function(){var t=s(),e=this.pointerDownScroll.x-t.x,i=this.pointerDownScroll.y-t.y;(Math.abs(e)>3||Math.abs(i)>3)&&this._pointerDone()},e}),function(t,e){"function"==typeof define&&define.amd?define("tap-listener/tap-listener",["unipointer/unipointer"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("unipointer")):t.TapListener=e(t,t.Unipointer)}(window,function(t,e){function i(t){this.bindTap(t)}var n=i.prototype=Object.create(e.prototype);return n.bindTap=function(t){t&&(this.unbindTap(),this.tapElement=t,this._bindStartEvent(t,!0))},n.unbindTap=function(){this.tapElement&&(this._bindStartEvent(this.tapElement,!0),delete this.tapElement)},n.pointerUp=function(i,n){if(!this.isIgnoringMouseUp||"mouseup"!=i.type){var s=e.getPointerPoint(n),o=this.tapElement.getBoundingClientRect(),r=t.pageXOffset,a=t.pageYOffset,l=s.x>=o.left+r&&s.x<=o.right+r&&s.y>=o.top+a&&s.y<=o.bottom+a;if(l&&this.emitEvent("tap",[i,n]),"mouseup"!=i.type){this.isIgnoringMouseUp=!0;var h=this;setTimeout(function(){delete h.isIgnoringMouseUp},400)}}},n.destroy=function(){this.pointerDone(),this.unbindTap()},i}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/prev-next-button",["./flickity","tap-listener/tap-listener","fizzy-ui-utils/utils"],function(i,n,s){return e(t,i,n,s)}):"object"==typeof module&&module.exports?module.exports=e(t,require("./flickity"),require("tap-listener"),require("fizzy-ui-utils")):e(t,t.Flickity,t.TapListener,t.fizzyUIUtils)}(window,function(t,e,i,n){"use strict";function s(t,e){this.direction=t,this.parent=e,this._create()}function o(t){return"string"==typeof t?t:"M "+t.x0+",50 L "+t.x1+","+(t.y1+50)+" L "+t.x2+","+(t.y2+50)+" L "+t.x3+",50  L "+t.x2+","+(50-t.y2)+" L "+t.x1+","+(50-t.y1)+" Z"}var r="http://www.w3.org/2000/svg";s.prototype=new i,s.prototype._create=function(){this.isEnabled=!0,this.isPrevious=this.direction==-1;var t=this.parent.options.rightToLeft?1:-1;this.isLeft=this.direction==t;var e=this.element=document.createElement("button");e.className="flickity-prev-next-button",e.className+=this.isPrevious?" previous":" next",e.setAttribute("type","button"),this.disable(),e.setAttribute("aria-label",this.isPrevious?"previous":"next");var i=this.createSVG();e.appendChild(i),this.on("tap",this.onTap),this.parent.on("select",this.update.bind(this)),this.on("pointerDown",this.parent.childUIPointerDown.bind(this.parent))},s.prototype.activate=function(){this.bindTap(this.element),this.element.addEventListener("click",this),this.parent.element.appendChild(this.element)},s.prototype.deactivate=function(){this.parent.element.removeChild(this.element),i.prototype.destroy.call(this),this.element.removeEventListener("click",this)},s.prototype.createSVG=function(){var t=document.createElementNS(r,"svg");t.setAttribute("viewBox","0 0 100 100");var e=document.createElementNS(r,"path"),i=o(this.parent.options.arrowShape);return e.setAttribute("d",i),e.setAttribute("class","arrow"),this.isLeft||e.setAttribute("transform","translate(100, 100) rotate(180) "),t.appendChild(e),t},s.prototype.onTap=function(){if(this.isEnabled){this.parent.uiChange();var t=this.isPrevious?"previous":"next";this.parent[t]()}},s.prototype.handleEvent=n.handleEvent,s.prototype.onclick=function(){var t=document.activeElement;t&&t==this.element&&this.onTap()},s.prototype.enable=function(){this.isEnabled||(this.element.disabled=!1,this.isEnabled=!0)},s.prototype.disable=function(){this.isEnabled&&(this.element.disabled=!0,this.isEnabled=!1)},s.prototype.update=function(){var t=this.parent.slides;if(this.parent.options.wrapAround&&t.length>1)return void this.enable();var e=t.length?t.length-1:0,i=this.isPrevious?0:e,n=this.parent.selectedIndex==i?"disable":"enable";this[n]()},s.prototype.destroy=function(){this.deactivate()},n.extend(e.defaults,{prevNextButtons:!0,arrowShape:{x0:10,x1:60,y1:50,x2:70,y2:40,x3:30}}),e.createMethods.push("_createPrevNextButtons");var a=e.prototype;return a._createPrevNextButtons=function(){this.options.prevNextButtons&&(this.prevButton=new s((-1),this),this.nextButton=new s(1,this),this.on("activate",this.activatePrevNextButtons))},a.activatePrevNextButtons=function(){this.prevButton.activate(),this.nextButton.activate(),this.on("deactivate",this.deactivatePrevNextButtons)},a.deactivatePrevNextButtons=function(){this.prevButton.deactivate(),this.nextButton.deactivate(),this.off("deactivate",this.deactivatePrevNextButtons)},e.PrevNextButton=s,e}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/page-dots",["./flickity","tap-listener/tap-listener","fizzy-ui-utils/utils"],function(i,n,s){return e(t,i,n,s)}):"object"==typeof module&&module.exports?module.exports=e(t,require("./flickity"),require("tap-listener"),require("fizzy-ui-utils")):e(t,t.Flickity,t.TapListener,t.fizzyUIUtils)}(window,function(t,e,i,n){function s(t){this.parent=t,this._create()}s.prototype=new i,s.prototype._create=function(){this.holder=document.createElement("ol"),this.holder.className="flickity-page-dots",this.dots=[],this.on("tap",this.onTap),this.on("pointerDown",this.parent.childUIPointerDown.bind(this.parent))},s.prototype.activate=function(){this.setDots(),this.bindTap(this.holder),this.parent.element.appendChild(this.holder)},s.prototype.deactivate=function(){this.parent.element.removeChild(this.holder),i.prototype.destroy.call(this)},s.prototype.setDots=function(){var t=this.parent.slides.length-this.dots.length;t>0?this.addDots(t):t<0&&this.removeDots(-t)},s.prototype.addDots=function(t){for(var e=document.createDocumentFragment(),i=[];t;){var n=document.createElement("li");n.className="dot",e.appendChild(n),i.push(n),t--}this.holder.appendChild(e),this.dots=this.dots.concat(i)},s.prototype.removeDots=function(t){var e=this.dots.splice(this.dots.length-t,t);e.forEach(function(t){this.holder.removeChild(t)},this)},s.prototype.updateSelected=function(){this.selectedDot&&(this.selectedDot.className="dot"),this.dots.length&&(this.selectedDot=this.dots[this.parent.selectedIndex],this.selectedDot.className="dot is-selected")},s.prototype.onTap=function(t){var e=t.target;if("LI"==e.nodeName){this.parent.uiChange();var i=this.dots.indexOf(e);this.parent.select(i)}},s.prototype.destroy=function(){this.deactivate()},e.PageDots=s,n.extend(e.defaults,{pageDots:!0}),e.createMethods.push("_createPageDots");var o=e.prototype;return o._createPageDots=function(){this.options.pageDots&&(this.pageDots=new s(this),this.on("activate",this.activatePageDots),this.on("select",this.updateSelectedPageDots),this.on("cellChange",this.updatePageDots),this.on("resize",this.updatePageDots),this.on("deactivate",this.deactivatePageDots))},o.activatePageDots=function(){this.pageDots.activate()},o.updateSelectedPageDots=function(){this.pageDots.updateSelected()},o.updatePageDots=function(){this.pageDots.setDots()},o.deactivatePageDots=function(){this.pageDots.deactivate()},e.PageDots=s,e}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/player",["ev-emitter/ev-emitter","fizzy-ui-utils/utils","./flickity"],function(t,i,n){return e(t,i,n)}):"object"==typeof module&&module.exports?module.exports=e(require("ev-emitter"),require("fizzy-ui-utils"),require("./flickity")):e(t.EvEmitter,t.fizzyUIUtils,t.Flickity)}(window,function(t,e,i){function n(t){this.parent=t,this.state="stopped",o&&(this.onVisibilityChange=function(){this.visibilityChange()}.bind(this),this.onVisibilityPlay=function(){this.visibilityPlay()}.bind(this))}var s,o;"hidden"in document?(s="hidden",o="visibilitychange"):"webkitHidden"in document&&(s="webkitHidden",o="webkitvisibilitychange"),n.prototype=Object.create(t.prototype),n.prototype.play=function(){if("playing"!=this.state){var t=document[s];if(o&&t)return void document.addEventListener(o,this.onVisibilityPlay);this.state="playing",o&&document.addEventListener(o,this.onVisibilityChange),this.tick()}},n.prototype.tick=function(){if("playing"==this.state){var t=this.parent.options.autoPlay;t="number"==typeof t?t:3e3;var e=this;this.clear(),this.timeout=setTimeout(function(){e.parent.next(!0),e.tick()},t)}},n.prototype.stop=function(){this.state="stopped",this.clear(),o&&document.removeEventListener(o,this.onVisibilityChange)},n.prototype.clear=function(){clearTimeout(this.timeout)},n.prototype.pause=function(){"playing"==this.state&&(this.state="paused",this.clear())},n.prototype.unpause=function(){"paused"==this.state&&this.play()},n.prototype.visibilityChange=function(){var t=document[s];this[t?"pause":"unpause"]()},n.prototype.visibilityPlay=function(){this.play(),document.removeEventListener(o,this.onVisibilityPlay)},e.extend(i.defaults,{pauseAutoPlayOnHover:!0}),i.createMethods.push("_createPlayer");var r=i.prototype;return r._createPlayer=function(){this.player=new n(this),this.on("activate",this.activatePlayer),this.on("uiChange",this.stopPlayer),this.on("pointerDown",this.stopPlayer),this.on("deactivate",this.deactivatePlayer)},r.activatePlayer=function(){this.options.autoPlay&&(this.player.play(),this.element.addEventListener("mouseenter",this))},r.playPlayer=function(){this.player.play()},r.stopPlayer=function(){this.player.stop()},r.pausePlayer=function(){this.player.pause()},r.unpausePlayer=function(){this.player.unpause()},r.deactivatePlayer=function(){this.player.stop(),this.element.removeEventListener("mouseenter",this)},r.onmouseenter=function(){this.options.pauseAutoPlayOnHover&&(this.player.pause(),this.element.addEventListener("mouseleave",this))},r.onmouseleave=function(){this.player.unpause(),this.element.removeEventListener("mouseleave",this)},i.Player=n,i}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/add-remove-cell",["./flickity","fizzy-ui-utils/utils"],function(i,n){return e(t,i,n)}):"object"==typeof module&&module.exports?module.exports=e(t,require("./flickity"),require("fizzy-ui-utils")):e(t,t.Flickity,t.fizzyUIUtils)}(window,function(t,e,i){function n(t){var e=document.createDocumentFragment();return t.forEach(function(t){e.appendChild(t.element)}),e}var s=e.prototype;return s.insert=function(t,e){var i=this._makeCells(t);if(i&&i.length){var s=this.cells.length;e=void 0===e?s:e;var o=n(i),r=e==s;if(r)this.slider.appendChild(o);else{var a=this.cells[e].element;this.slider.insertBefore(o,a)}if(0===e)this.cells=i.concat(this.cells);else if(r)this.cells=this.cells.concat(i);else{var l=this.cells.splice(e,s-e);this.cells=this.cells.concat(i).concat(l)}this._sizeCells(i);var h=e>this.selectedIndex?0:i.length;this._cellAddedRemoved(e,h)}},s.append=function(t){this.insert(t,this.cells.length)},s.prepend=function(t){this.insert(t,0)},s.remove=function(t){var e,n,s=this.getCells(t),o=0,r=s.length;for(e=0;e<r;e++){n=s[e];var a=this.cells.indexOf(n)<this.selectedIndex;o-=a?1:0}for(e=0;e<r;e++)n=s[e],n.remove(),i.removeFrom(this.cells,n);s.length&&this._cellAddedRemoved(0,o)},s._cellAddedRemoved=function(t,e){e=e||0,this.selectedIndex+=e,this.selectedIndex=Math.max(0,Math.min(this.slides.length-1,this.selectedIndex)),this.cellChange(t,!0),this.emitEvent("cellAddedRemoved",[t,e])},s.cellSizeChange=function(t){var e=this.getCell(t);if(e){e.getSize();var i=this.cells.indexOf(e);this.cellChange(i)}},s.cellChange=function(t,e){var i=this.slideableWidth;if(this._positionCells(t),this._getWrapShiftCells(),this.setGallerySize(),this.emitEvent("cellChange",[t]),this.options.freeScroll){var n=i-this.slideableWidth;this.x+=n*this.cellAlign,this.positionSlider()}else e&&this.positionSliderAtSelected(),this.select(this.selectedIndex)},e}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/lazyload",["./flickity","fizzy-ui-utils/utils"],function(i,n){return e(t,i,n)}):"object"==typeof module&&module.exports?module.exports=e(t,require("./flickity"),require("fizzy-ui-utils")):e(t,t.Flickity,t.fizzyUIUtils)}(window,function(t,e,i){"use strict";function n(t){if("IMG"==t.nodeName&&t.getAttribute("data-flickity-lazyload"))return[t];var e=t.querySelectorAll("img[data-flickity-lazyload]");return i.makeArray(e)}function s(t,e){this.img=t,this.flickity=e,this.load()}e.createMethods.push("_createLazyload");var o=e.prototype;return o._createLazyload=function(){this.on("select",this.lazyLoad)},o.lazyLoad=function(){var t=this.options.lazyLoad;if(t){var e="number"==typeof t?t:0,i=this.getAdjacentCellElements(e),o=[];i.forEach(function(t){var e=n(t);o=o.concat(e)}),o.forEach(function(t){new s(t,this)},this)}},s.prototype.handleEvent=i.handleEvent,s.prototype.load=function(){this.img.addEventListener("load",this),this.img.addEventListener("error",this),this.img.src=this.img.getAttribute("data-flickity-lazyload"),this.img.removeAttribute("data-flickity-lazyload")},s.prototype.onload=function(t){this.complete(t,"flickity-lazyloaded")},s.prototype.onerror=function(t){this.complete(t,"flickity-lazyerror")},s.prototype.complete=function(t,e){this.img.removeEventListener("load",this),this.img.removeEventListener("error",this);var i=this.flickity.getParentCell(this.img),n=i&&i.element;this.flickity.cellSizeChange(n),this.img.classList.add(e),this.flickity.dispatchEvent("lazyLoad",t,n)},e.LazyLoader=s,e}),function(t,e){"function"==typeof define&&define.amd?define("flickity/js/index",["./flickity","./drag","./prev-next-button","./page-dots","./player","./add-remove-cell","./lazyload"],e):"object"==typeof module&&module.exports&&(module.exports=e(require("./flickity"),require("./drag"),require("./prev-next-button"),require("./page-dots"),require("./player"),require("./add-remove-cell"),require("./lazyload")))}(window,function(t){return t}),function(t,e){"function"==typeof define&&define.amd?define("flickity-as-nav-for/as-nav-for",["flickity/js/index","fizzy-ui-utils/utils"],e):"object"==typeof module&&module.exports?module.exports=e(require("flickity"),require("fizzy-ui-utils")):t.Flickity=e(t.Flickity,t.fizzyUIUtils)}(window,function(t,e){function i(t,e,i){return(e-t)*i+t}t.createMethods.push("_createAsNavFor");var n=t.prototype;return n._createAsNavFor=function(){this.on("activate",this.activateAsNavFor),this.on("deactivate",this.deactivateAsNavFor),this.on("destroy",this.destroyAsNavFor);var t=this.options.asNavFor;if(t){var e=this;setTimeout(function(){e.setNavCompanion(t)})}},n.setNavCompanion=function(i){i=e.getQueryElement(i);var n=t.data(i);if(n&&n!=this){this.navCompanion=n;var s=this;this.onNavCompanionSelect=function(){s.navCompanionSelect()},n.on("select",this.onNavCompanionSelect),this.on("staticClick",this.onNavStaticClick),this.navCompanionSelect(!0)}},n.navCompanionSelect=function(t){if(this.navCompanion){var e=this.navCompanion.selectedCells[0],n=this.navCompanion.cells.indexOf(e),s=n+this.navCompanion.selectedCells.length-1,o=Math.floor(i(n,s,this.navCompanion.cellAlign));if(this.selectCell(o,!1,t),this.removeNavSelectedElements(),!(o>=this.cells.length)){var r=this.cells.slice(n,s+1);this.navSelectedElements=r.map(function(t){return t.element}),this.changeNavSelectedClass("add")}}},n.changeNavSelectedClass=function(t){this.navSelectedElements.forEach(function(e){e.classList[t]("is-nav-selected")})},n.activateAsNavFor=function(){this.navCompanionSelect(!0)},n.removeNavSelectedElements=function(){this.navSelectedElements&&(this.changeNavSelectedClass("remove"),delete this.navSelectedElements)},n.onNavStaticClick=function(t,e,i,n){"number"==typeof n&&this.navCompanion.selectCell(n)},n.deactivateAsNavFor=function(){this.removeNavSelectedElements()},n.destroyAsNavFor=function(){this.navCompanion&&(this.navCompanion.off("select",this.onNavCompanionSelect),this.off("staticClick",this.onNavStaticClick),delete this.navCompanion)},t}),function(t,e){"use strict";"function"==typeof define&&define.amd?define("imagesloaded/imagesloaded",["ev-emitter/ev-emitter"],function(i){return e(t,i)}):"object"==typeof module&&module.exports?module.exports=e(t,require("ev-emitter")):t.imagesLoaded=e(t,t.EvEmitter)}(window,function(t,e){function i(t,e){for(var i in e)t[i]=e[i];return t}function n(t){var e=[];if(Array.isArray(t))e=t;else if("number"==typeof t.length)for(var i=0;i<t.length;i++)e.push(t[i]);else e.push(t);return e}function s(t,e,o){return this instanceof s?("string"==typeof t&&(t=document.querySelectorAll(t)),this.elements=n(t),this.options=i({},this.options),"function"==typeof e?o=e:i(this.options,e),o&&this.on("always",o),this.getImages(),a&&(this.jqDeferred=new a.Deferred),void setTimeout(function(){this.check()}.bind(this))):new s(t,e,o)}function o(t){this.img=t}function r(t,e){this.url=t,this.element=e,this.img=new Image}var a=t.jQuery,l=t.console;s.prototype=Object.create(e.prototype),s.prototype.options={},s.prototype.getImages=function(){this.images=[],this.elements.forEach(this.addElementImages,this)},s.prototype.addElementImages=function(t){"IMG"==t.nodeName&&this.addImage(t),this.options.background===!0&&this.addElementBackgroundImages(t);var e=t.nodeType;if(e&&h[e]){for(var i=t.querySelectorAll("img"),n=0;n<i.length;n++){var s=i[n];this.addImage(s)}if("string"==typeof this.options.background){var o=t.querySelectorAll(this.options.background);for(n=0;n<o.length;n++){var r=o[n];this.addElementBackgroundImages(r)}}}};var h={1:!0,9:!0,11:!0};return s.prototype.addElementBackgroundImages=function(t){var e=getComputedStyle(t);if(e)for(var i=/url\((['"])?(.*?)\1\)/gi,n=i.exec(e.backgroundImage);null!==n;){var s=n&&n[2];s&&this.addBackground(s,t),n=i.exec(e.backgroundImage)}},s.prototype.addImage=function(t){var e=new o(t);this.images.push(e)},s.prototype.addBackground=function(t,e){var i=new r(t,e);this.images.push(i)},s.prototype.check=function(){function t(t,i,n){setTimeout(function(){e.progress(t,i,n)})}var e=this;return this.progressedCount=0,this.hasAnyBroken=!1,this.images.length?void this.images.forEach(function(e){e.once("progress",t),e.check()}):void this.complete()},s.prototype.progress=function(t,e,i){this.progressedCount++,this.hasAnyBroken=this.hasAnyBroken||!t.isLoaded,this.emitEvent("progress",[this,t,e]),this.jqDeferred&&this.jqDeferred.notify&&this.jqDeferred.notify(this,t),this.progressedCount==this.images.length&&this.complete(),this.options.debug&&l&&l.log("progress: "+i,t,e)},s.prototype.complete=function(){var t=this.hasAnyBroken?"fail":"done";if(this.isComplete=!0,this.emitEvent(t,[this]),this.emitEvent("always",[this]),this.jqDeferred){var e=this.hasAnyBroken?"reject":"resolve";this.jqDeferred[e](this)}},o.prototype=Object.create(e.prototype),o.prototype.check=function(){var t=this.getIsImageComplete();return t?void this.confirm(0!==this.img.naturalWidth,"naturalWidth"):(this.proxyImage=new Image,this.proxyImage.addEventListener("load",this),this.proxyImage.addEventListener("error",this),this.img.addEventListener("load",this),this.img.addEventListener("error",this),void(this.proxyImage.src=this.img.src))},o.prototype.getIsImageComplete=function(){return this.img.complete&&void 0!==this.img.naturalWidth},o.prototype.confirm=function(t,e){this.isLoaded=t,this.emitEvent("progress",[this,this.img,e])},o.prototype.handleEvent=function(t){var e="on"+t.type;this[e]&&this[e](t)},o.prototype.onload=function(){this.confirm(!0,"onload"),this.unbindEvents()},o.prototype.onerror=function(){this.confirm(!1,"onerror"),this.unbindEvents()},o.prototype.unbindEvents=function(){this.proxyImage.removeEventListener("load",this),this.proxyImage.removeEventListener("error",this),this.img.removeEventListener("load",this),this.img.removeEventListener("error",this)},r.prototype=Object.create(o.prototype),r.prototype.check=function(){this.img.addEventListener("load",this),this.img.addEventListener("error",this),this.img.src=this.url;var t=this.getIsImageComplete();t&&(this.confirm(0!==this.img.naturalWidth,"naturalWidth"),this.unbindEvents())},r.prototype.unbindEvents=function(){this.img.removeEventListener("load",this),this.img.removeEventListener("error",this)},r.prototype.confirm=function(t,e){this.isLoaded=t,this.emitEvent("progress",[this,this.element,e])},s.makeJQueryPlugin=function(e){e=e||t.jQuery,e&&(a=e,a.fn.imagesLoaded=function(t,e){var i=new s(this,t,e);return i.jqDeferred.promise(a(this))})},s.makeJQueryPlugin(),s}),function(t,e){"function"==typeof define&&define.amd?define(["flickity/js/index","imagesloaded/imagesloaded"],function(i,n){return e(t,i,n)}):"object"==typeof module&&module.exports?module.exports=e(t,require("flickity"),require("imagesloaded")):t.Flickity=e(t,t.Flickity,t.imagesLoaded)}(window,function(t,e,i){"use strict";e.createMethods.push("_createImagesLoaded");var n=e.prototype;return n._createImagesLoaded=function(){this.on("activate",this.imagesLoaded)},n.imagesLoaded=function(){function t(t,i){var n=e.getParentCell(i.img);e.cellSizeChange(n&&n.element),e.options.freeScroll||e.positionSliderAtSelected()}if(this.options.imagesLoaded){var e=this;i(this.slider).on("progress",t)}},e});
 $('body').scrollspy({
   target: '#navbar'})
 
@@ -10306,25 +12403,16 @@ $(window).scroll(function() {
   });
 });
 
-//Project carousels
-$('.carpool-carousel').flickity({
-  wrapAround: true
-});
-$('.honeycomb-carousel').flickity({
-  wrapAround: true,
-  cellAlign: 'left',
-  contain: true
-});
-$('.turnapp-carousel').flickity({
-  wrapAround: true,
-  cellAlign: 'left',
-  contain: true
-});
-$('.bellastel-carousel').flickity({
-  wrapAround: true,
-  cellAlign: 'left',
-  contain: true,
-  percentPosition: false
+$(".carousel").swipe({
+
+  swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
+
+    if (direction == 'left') $(this).carousel('next');
+    if (direction == 'right') $(this).carousel('prev');
+
+  },
+  allowPageScroll:"vertical"
+
 });
 
 //var screenWidth = $(window).height()-300;

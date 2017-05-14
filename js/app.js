@@ -32,25 +32,16 @@ $(window).scroll(function() {
   });
 });
 
-//Project carousels
-$('.carpool-carousel').flickity({
-  wrapAround: true
-});
-$('.honeycomb-carousel').flickity({
-  wrapAround: true,
-  cellAlign: 'left',
-  contain: true
-});
-$('.turnapp-carousel').flickity({
-  wrapAround: true,
-  cellAlign: 'left',
-  contain: true
-});
-$('.bellastel-carousel').flickity({
-  wrapAround: true,
-  cellAlign: 'left',
-  contain: true,
-  percentPosition: false
+$(".carousel").swipe({
+
+  swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
+
+    if (direction == 'left') $(this).carousel('next');
+    if (direction == 'right') $(this).carousel('prev');
+
+  },
+  allowPageScroll:"vertical"
+
 });
 
 //var screenWidth = $(window).height()-300;

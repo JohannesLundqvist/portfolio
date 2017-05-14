@@ -85,12 +85,29 @@ section.project-text{
 section.project-image{
   z-index: 3;
 }
-.project-carousel{
-.carousel-item{
-  height: 400px;
+.carousel{
+  padding-bottom:1rem;
 }
+.carousel-item img{
+  max-height: 500px;
+  margin: 0 auto;
 }
-
+.carousel-control-prev{
+  justify-content: flex-start;
+}
+.carousel-control-next {
+    justify-content: flex-end;
+  }
+  .carousel-indicators{
+    bottom:0;
+    margin-bottom:0;
+  }
+  .carousel-control-next-icon {
+      background-image: url('./../img/arrow-right.svg');
+  }
+  .carousel-control-prev-icon {
+      background-image: url('./../img/arrow-left.svg');
+  }
 section.project-contact{
   background: #f3f3f3;
   padding-top: 3rem;
