@@ -28,39 +28,6 @@ gulp.task('scripts', function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('imagemin', function(){
-	gulp.src('img/*')
-		.pipe(imagemin())
-		.pipe(gulp.dest('imgmin'));
-
-      gulp.src('img/automanager/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/automanager/'));
-
-      gulp.src('img/bellastellaria/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/bellastellaria/'));
-
-      gulp.src('img/campaignGen/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/campaignGen/'));
-
-      gulp.src('img/hamlin/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/hamlin/'));
-
-      gulp.src('img/honeycomb/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/honeycomb/'));
-
-      gulp.src('img/ixdRedesign/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/ixdRedesign/'));
-
-      gulp.src('img/turnapp/*')
-    		.pipe(imagemin())
-    		.pipe(gulp.dest('imgmin/turnapp/'));
-  });
 
 
-gulp.task('default', ['serve', 'scripts', 'imagemin']);
+gulp.task('default', ['serve', 'scripts']);
