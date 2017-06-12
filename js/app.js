@@ -1,6 +1,9 @@
+$(function() {
+    $('body').removeClass('fade-out');
+});
+
 $('body').scrollspy({
   target: '#navbar'})
-
 
 $(".navbar-nav li a[href^='#']").on('click', function(e) {
    // prevent default anchor click behavior

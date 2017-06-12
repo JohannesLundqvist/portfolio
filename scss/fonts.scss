@@ -68,18 +68,18 @@ html {
 
 @include media-breakpoint-up(lg) {
   html {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 @include media-breakpoint-up(xl) {
   html {
-    font-size: 18px;
+    font-size: 14px;
   }
 }
 //Container size for extra large screens
 @media (min-width: 1920px){
   html {
-    font-size: 24px;
+    font-size: 18px;
   }
 .container {
     width: 1700px;
