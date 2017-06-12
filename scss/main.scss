@@ -12,6 +12,9 @@ body {
     opacity: 1;
     transition: 1s opacity;
 }
+img{
+  transition: linear;
+}
 body.fade-out {
     opacity: 0;
     transition: none;
