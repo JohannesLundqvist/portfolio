@@ -13,7 +13,17 @@ body {
     transition: 1s opacity;
 }
 img{
-  transition: linear;
+  opacity: 1;
+  transition: 1s opacity;
+}
+.linkedin-logo{
+  &:hover{
+    opacity: 0.9;
+  }
+}
+img.fade-out {
+    opacity: 0;
+    transition: none;
 }
 body.fade-out {
     opacity: 0;
