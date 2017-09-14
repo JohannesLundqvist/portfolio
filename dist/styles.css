@@ -6002,8 +6002,12 @@ img {
   opacity: 1;
   transition: 1s opacity; }
 
-.linkedin-logo:hover {
-  opacity: 0.9; }
+.linkedin-logo {
+  opacity: 0.93;
+  transition: 0s opacity; }
+  .linkedin-logo:hover {
+    opacity: 1;
+    transition: 0s opacity; }
 
 img.fade-out {
   opacity: 0;
@@ -6058,6 +6062,9 @@ h2 {
   .section-heading img {
     max-width: 90%; }
 
+.section-workflow .section-heading img {
+  padding-top: 1rem; }
+
 section {
   position: relative;
   z-index: 1; }
@@ -6093,48 +6100,46 @@ section {
     position: absolute;
     left: 50%;
     top: 0;
-    -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-60%);
-    -ms-transform: rotate(-3deg) translateX(-50%) translateY(-60%);
-    transform: rotate(-3deg) translateX(-50%) translateY(-60%);
     -webkit-transform-origin: center top;
     -ms-transform-origin: center top;
     transform-origin: center top;
-    z-index: -1; }
+    z-index: -1;
+    height: 150px;
+    -webkit-transform: rotate(-5deg) translateX(-50%) translateY(-40%);
+    -ms-transform: rotate(-5deg) translateX(-50%) translateY(-40%);
+    transform: rotate(-5deg) translateX(-50%) translateY(-40%); }
+    @media (min-width: 576px) {
+      .section-projects:before, .section-contact:before, .section-workflow:before {
+        height: 170px;
+        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
+        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
+        transform: rotate(-3deg) translateX(-50%) translateY(-50%); } }
+    @media (min-width: 768px) {
+      .section-projects:before, .section-contact:before, .section-workflow:before {
+        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
+        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
+        transform: rotate(-3deg) translateX(-50%) translateY(-50%); } }
     @media (min-width: 1024px) {
       .section-projects:before, .section-contact:before, .section-workflow:before {
         -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-60%);
         -ms-transform: rotate(-3deg) translateX(-50%) translateY(-60%);
         transform: rotate(-3deg) translateX(-50%) translateY(-60%); } }
-    @media (min-width: 1920px) {
+    @media (min-width: 1440px) {
       .section-projects:before, .section-contact:before, .section-workflow:before {
-        height: 230px;
-        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-60%);
-        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-60%);
-        transform: rotate(-3deg) translateX(-50%) translateY(-60%); } }
-    @media (min-width: 2500px) {
-      .section-projects:before, .section-contact:before, .section-workflow:before {
-        height: 230px;
         -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-70%);
         -ms-transform: rotate(-3deg) translateX(-50%) translateY(-70%);
         transform: rotate(-3deg) translateX(-50%) translateY(-70%); } }
-    @media (max-width: 1023px) {
+    @media (min-width: 1920px) {
       .section-projects:before, .section-contact:before, .section-workflow:before {
-        height: 170px;
-        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
-        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
-        transform: rotate(-3deg) translateX(-50%) translateY(-50%); } }
-    @media (max-width: 767px) {
+        height: 230px;
+        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-75%);
+        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-75%);
+        transform: rotate(-3deg) translateX(-50%) translateY(-75%); } }
+    @media (min-width: 2500px) {
       .section-projects:before, .section-contact:before, .section-workflow:before {
-        height: 170px;
-        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
-        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-50%);
-        transform: rotate(-3deg) translateX(-50%) translateY(-50%); } }
-    @media (max-width: 575px) {
-      .section-projects:before, .section-contact:before, .section-workflow:before {
-        height: 150px;
-        -webkit-transform: rotate(-5deg) translateX(-50%) translateY(-40%);
-        -ms-transform: rotate(-5deg) translateX(-50%) translateY(-40%);
-        transform: rotate(-5deg) translateX(-50%) translateY(-40%); } }
+        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-80%);
+        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-80%);
+        transform: rotate(-3deg) translateX(-50%) translateY(-80%); } }
 
 .section-about {
   padding-top: 8rem;
