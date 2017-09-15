@@ -12404,8 +12404,6 @@ $(window).scroll(function() {
   $(".logo").css({
     "top": -($(window).scrollTop())/8 + "px"
   });
-});
-
 $(".carousel").swipe({
 
   swipe: function(event, direction, distance, duration, fingerCount, fingerData) {

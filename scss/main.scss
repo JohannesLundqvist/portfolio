@@ -81,6 +81,9 @@ padding-bottom: 3rem;
 img{
   max-width: 90%;
 }
+@media (min-width: 1400px){
+  padding-bottom: 5rem;
+}
 }
 .section-workflow{
   .section-heading img{
@@ -114,10 +117,18 @@ section{
 
 .section-projects, .section-contact,.section-workflow {
   padding-top: 5rem;
-  padding-bottom: 7rem;
-  @media (max-width: 575px){
+  padding-bottom: 5rem;
+  @media (min-width: 576px){
     padding-top:5rem;
-    padding-bottom: 5rem;
+    padding-bottom: 7rem;
+  }
+  @media (min-width: 1400px){
+    padding-top:5rem;
+    padding-bottom: 8rem;
+  }
+  @media (min-width: 1800px){
+    padding-top:5rem;
+    padding-bottom: 9rem;
   }
   &:before{
     content: '';

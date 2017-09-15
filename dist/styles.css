@@ -6061,6 +6061,9 @@ h2 {
   padding-bottom: 3rem; }
   .section-heading img {
     max-width: 90%; }
+  @media (min-width: 1400px) {
+    .section-heading {
+      padding-bottom: 5rem; } }
 
 .section-workflow .section-heading img {
   padding-top: 1rem; }
@@ -6087,11 +6090,19 @@ section {
 
 .section-projects, .section-contact, .section-workflow {
   padding-top: 5rem;
-  padding-bottom: 7rem; }
-  @media (max-width: 575px) {
+  padding-bottom: 5rem; }
+  @media (min-width: 576px) {
     .section-projects, .section-contact, .section-workflow {
       padding-top: 5rem;
-      padding-bottom: 5rem; } }
+      padding-bottom: 7rem; } }
+  @media (min-width: 1400px) {
+    .section-projects, .section-contact, .section-workflow {
+      padding-top: 5rem;
+      padding-bottom: 8rem; } }
+  @media (min-width: 1800px) {
+    .section-projects, .section-contact, .section-workflow {
+      padding-top: 5rem;
+      padding-bottom: 9rem; } }
   .section-projects:before, .section-contact:before, .section-workflow:before {
     content: '';
     display: block;
