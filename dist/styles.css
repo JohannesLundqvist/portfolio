@@ -6263,9 +6263,17 @@ section {
   object-fit: cover; }
 
 .card {
-  height: 100%;
-  min-height: 250px;
+  height: 250px;
   border: none; }
+  @media (min-width: 1400px) {
+    .card {
+      height: 300px; } }
+  @media (min-width: 1920px) {
+    .card {
+      height: 450px; } }
+  @media (min-width: 2560px) {
+    .card {
+      height: 550px; } }
 
 .nav-link {
   display: inline-block;
@@ -6309,12 +6317,15 @@ nav .nav-link.active:after {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 100%; }
+    height: 100vh;
+    opacity: 1;
+    transition: 1s opacity; }
   .nav-flex.collapsing {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 100%; }
+    height: 100vh;
+    opacity: 0; }
   .nav-bottom .circle {
     width: 40px;
     height: 40px;
@@ -6404,7 +6415,7 @@ button:focus {
   font-family: 'GothamXLight';
   src: url("./../fonts/Gotham-XLight.ttf") format("truetype"); }
 
-nav {
+nav, .bold {
   font-family: 'GothamBold', Roboto, sans-serif; }
 
 html {
@@ -6436,10 +6447,6 @@ html {
 .modal-dialog {
   max-width: 100%;
   margin: 0; }
-
-.modal-body {
-  overflow-y: auto;
-  height: 100vh; }
 
 .modal-header {
   padding: 0; }
@@ -6485,9 +6492,12 @@ html {
   @media (min-width: 1024px) {
     .project-hero .project-img {
       min-height: 400px; } }
+  @media (min-width: 1400px) {
+    .project-hero .project-img {
+      min-height: 450px; } }
   @media (min-width: 1920px) {
     .project-hero .project-img {
-      min-height: 500px; } }
+      min-height: 550px; } }
 
 .project-subheading {
   text-transform: uppercase;
@@ -6607,7 +6617,7 @@ section.project-contact {
 
 .btn-outline-close {
   border: 1px solid black;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.3);
   font-size: initial;
   padding: 0.5rem;
   margin: 15px; }

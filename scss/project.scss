@@ -36,8 +36,11 @@
       @media (min-width: 1024px){
         min-height: 400px;
         }
+        @media (min-width: 1400px){
+          min-height: 450px;
+          }
         @media (min-width: 1920px){
-          min-height: 500px;
+          min-height: 550px;
           }
   }
 }
@@ -169,7 +172,7 @@ section.project-contact{
 //Close project button
 .btn-outline-close{
   border: 1px solid black;
-  background: transparent;
+  background: rgba(256, 256, 256, 0.3);
   font-size: initial;
   padding: 0.5rem;
   margin: 15px;
