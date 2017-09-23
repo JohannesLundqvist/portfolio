@@ -46,10 +46,16 @@
   src: url('./../fonts/Gotham-XLight.ttf')  format('truetype'),
 }
 
-nav, .bold {
+nav {
   font-family: 'GothamBold', Roboto, sans-serif;
 }
-
+.bold {
+  font-family: 'GothamMedium', Roboto, sans-serif;
+}
+.link {
+  color: #4992c8;
+  text-decoration: underline;
+}
 html {
   font-size: 14px;
 }

@@ -6228,7 +6228,8 @@ section {
     font-family: 'GothamBoldItalic';
     color: #383838;
     text-transform: uppercase;
-    text-align: center; }
+    text-align: center;
+    font-size: 1rem; }
 
 .card-project {
   overflow: hidden; }
@@ -6415,8 +6416,15 @@ button:focus {
   font-family: 'GothamXLight';
   src: url("./../fonts/Gotham-XLight.ttf") format("truetype"); }
 
-nav, .bold {
+nav {
   font-family: 'GothamBold', Roboto, sans-serif; }
+
+.bold {
+  font-family: 'GothamMedium', Roboto, sans-serif; }
+
+.link {
+  color: #4992c8;
+  text-decoration: underline; }
 
 html {
   font-size: 14px; }
@@ -6591,9 +6599,9 @@ section.project-contact {
     background: #fff; }
     @media (min-width: 1024px) {
       section.project-contact:before {
-        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-75%);
-        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-75%);
-        transform: rotate(-3deg) translateX(-50%) translateY(-75%); } }
+        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-80%);
+        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-80%);
+        transform: rotate(-3deg) translateX(-50%) translateY(-80%); } }
     @media (min-width: 1920px) {
       section.project-contact:before {
         -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-85%);
@@ -6601,9 +6609,9 @@ section.project-contact {
         transform: rotate(-3deg) translateX(-50%) translateY(-85%); } }
     @media (min-width: 2500px) {
       section.project-contact:before {
-        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-85%);
-        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-85%);
-        transform: rotate(-3deg) translateX(-50%) translateY(-85%); } }
+        -webkit-transform: rotate(-3deg) translateX(-50%) translateY(-95%);
+        -ms-transform: rotate(-3deg) translateX(-50%) translateY(-95%);
+        transform: rotate(-3deg) translateX(-50%) translateY(-95%); } }
     @media (max-width: 767px) {
       section.project-contact:before {
         -webkit-transform: rotate(-5deg) translateX(-50%) translateY(-80%);
