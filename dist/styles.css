@@ -6313,10 +6313,9 @@ nav .nav-link.active:after {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 100vh;
+    height: 85vh;
     opacity: 1;
-    transition: 1s opacity;
-    padding-bottom: 2rem; }
+    transition: 1s opacity; }
   .nav-flex.collapsing {
     display: flex;
     flex-direction: column;
