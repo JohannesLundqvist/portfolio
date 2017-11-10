@@ -6264,17 +6264,12 @@ section {
   object-fit: cover; }
 
 .card {
-  height: 250px;
-  border: none; }
-  @media (min-width: 1400px) {
-    .card {
-      height: 300px; } }
-  @media (min-width: 1920px) {
-    .card {
-      height: 450px; } }
-  @media (min-width: 2560px) {
-    .card {
-      height: 550px; } }
+  border: none;
+  height: 100%; }
+
+@media (max-width: 767px) {
+  .section-projects .card {
+    height: 250px; } }
 
 .nav-link {
   display: inline-block;
@@ -6320,7 +6315,8 @@ nav .nav-link.active:after {
     justify-content: space-around;
     height: 100vh;
     opacity: 1;
-    transition: 1s opacity; }
+    transition: 1s opacity;
+    padding-bottom: 2rem; }
   .nav-flex.collapsing {
     display: flex;
     flex-direction: column;
@@ -6423,7 +6419,7 @@ nav {
   font-family: 'GothamMedium', Roboto, sans-serif; }
 
 .link {
-  color: #4992c8;
+  color: #373737;
   text-decoration: underline; }
 
 html {
@@ -6491,21 +6487,8 @@ html {
 
 .project-hero .project-img {
   width: 100%;
-  min-height: 250px;
   display: block;
   object-fit: cover; }
-  @media (min-width: 767px) {
-    .project-hero .project-img {
-      min-height: 300px; } }
-  @media (min-width: 1024px) {
-    .project-hero .project-img {
-      min-height: 400px; } }
-  @media (min-width: 1400px) {
-    .project-hero .project-img {
-      min-height: 450px; } }
-  @media (min-width: 1920px) {
-    .project-hero .project-img {
-      min-height: 550px; } }
 
 .project-subheading {
   text-transform: uppercase;
@@ -6558,8 +6541,10 @@ section.project-image {
   padding-bottom: 1rem; }
 
 .carousel-item img {
-  max-height: 500px;
   margin: 0 auto; }
+
+img.carousel-item-maxheight {
+  max-height: 500px; }
 
 .carousel-control-prev {
   justify-content: flex-start; }
@@ -6580,7 +6565,11 @@ section.project-image {
 section.project-contact {
   background: #f3f3f3;
   padding-top: 3rem;
-  padding-bottom: 3rem; }
+  padding-bottom: 3rem;
+  margin-top: 5rem; }
+  @media (max-width: 767px) {
+    section.project-contact {
+      margin-top: 2rem; } }
   section.project-contact:before {
     content: '';
     display: block;

@@ -319,15 +319,11 @@ img {
   }
 
 .card{
-  height:250px;
   border: none;
-  @media (min-width: 1400px){
-    height: 300px;
-  }
-  @media (min-width: 1920px){
-    height: 450px;
-  }
-  @media (min-width: 2560px){
-    height: 550px;
-  }
+  height: 100%;
+}
+@media (max-width: 767px){
+.section-projects .card{
+  height: 250px;
+}
 }

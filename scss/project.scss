@@ -27,21 +27,8 @@
 .project-hero{
   .project-img{
     width: 100%;
-    min-height: 250px;
     display: block;
     object-fit: cover;
-    @media (min-width: 767px){
-      min-height: 300px;
-      }
-      @media (min-width: 1024px){
-        min-height: 400px;
-        }
-        @media (min-width: 1400px){
-          min-height: 450px;
-          }
-        @media (min-width: 1920px){
-          min-height: 550px;
-          }
   }
 }
 .project-subheading{
@@ -101,8 +88,10 @@ section.project-image{
   padding-bottom:1rem;
 }
 .carousel-item img{
-  max-height: 500px;
   margin: 0 auto;
+}
+img.carousel-item-maxheight{
+  max-height: 500px;
 }
 .carousel-control-prev{
   justify-content: flex-start;
@@ -124,6 +113,10 @@ section.project-contact{
   background: #f3f3f3;
   padding-top: 3rem;
   padding-bottom: 3rem;
+  margin-top: 5rem;
+  @media (max-width: 767px){
+  margin-top: 2rem;
+  }
   &:before{
     content: '';
     display: block;
