@@ -5988,11 +5988,11 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
     display: none !important; } }
 
 * {
-  transition: linear; }
+  transition: ease-in; }
   *:before {
-    transition: linear; }
+    transition: ease-in; }
   *:after {
-    transition: linear; }
+    transition: ease-in; }
 
 body {
   opacity: 1;
@@ -6442,31 +6442,10 @@ html {
 
 @media (min-width: 1920px) {
   html {
-    font-size: 18px; }
-  .container {
-    width: 1700px;
-    max-width: 100%; } }
-
-.modal-dialog {
-  max-width: 100%;
-  margin: 0; }
+    font-size: 18px; } }
 
 .modal-header {
   padding: 0; }
-
-.modal.show {
-  opacity: 1; }
-
-.modal {
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
-  transition-property: opacity;
-  transition-duration: 0.3s;
-  transition-timing-function: ease-in;
-  transition-delay: initial; }
-
-.modal-backdrop {
-  display: none; }
 
 .carousel-cell img {
   width: 100vw; }
