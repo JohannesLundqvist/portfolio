@@ -1,11 +1,11 @@
 //Main
 *{
-  transition: linear;
+  transition: ease-in;
   &:before{
-    transition: linear;
+    transition: ease-in;
   }
   &:after{
-    transition: linear;
+    transition: ease-in;
   }
 }
 body {
@@ -42,6 +42,7 @@ img{
 .no-overflow{
 overflow: hidden;
 }
+
 .circle {
 	border-radius: 50%;
 	width: 70px;
