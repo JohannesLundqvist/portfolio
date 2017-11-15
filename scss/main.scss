@@ -17,11 +17,12 @@ img{
   transition: 1s opacity;
 }
 .linkedin-logo{
-  opacity: 0.93;
-  transition: 0s opacity;
   &:hover{
-    opacity: 1;
-    transition: 0s opacity;
+    #circle{
+      fill: #111111;
+      transition: 0s fill;
+    }
+
   }
 }
 img.fade-out {

@@ -1,5 +1,5 @@
-.modal-header{
-  padding:0;
+.project-header{
+  display: flex;
 }
 
 .carousel-cell img{
@@ -70,9 +70,15 @@
 section.project-summary{
  background: #f3f3f3;
  padding: 1.5rem 0;
- .col-summary{
-   @media(max-width: 576px){
-     margin: 2rem 0;
+ .row{
+   justify-content: space-between;
+ }
+ @media(max-width: 576px){
+   .row{
+     flex-direction: column;
+   }
+   .col-summary{
+     margin: 2rem 1rem;
    }
  }
  .summary-text{

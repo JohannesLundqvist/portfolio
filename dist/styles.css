@@ -6002,12 +6002,9 @@ img {
   opacity: 1;
   transition: 1s opacity; }
 
-.linkedin-logo {
-  opacity: 0.93;
-  transition: 0s opacity; }
-  .linkedin-logo:hover {
-    opacity: 1;
-    transition: 0s opacity; }
+.linkedin-logo:hover #circle {
+  fill: #111111;
+  transition: 0s fill; }
 
 img.fade-out {
   opacity: 0;
@@ -6444,8 +6441,8 @@ html {
   html {
     font-size: 18px; } }
 
-.modal-header {
-  padding: 0; }
+.project-header {
+  display: flex; }
 
 .carousel-cell img {
   width: 100vw; }
@@ -6501,9 +6498,13 @@ html {
 section.project-summary {
   background: #f3f3f3;
   padding: 1.5rem 0; }
+  section.project-summary .row {
+    justify-content: space-between; }
   @media (max-width: 576px) {
+    section.project-summary .row {
+      flex-direction: column; }
     section.project-summary .col-summary {
-      margin: 2rem 0; } }
+      margin: 2rem 1rem; } }
   section.project-summary .summary-text {
     margin: 0; }
 

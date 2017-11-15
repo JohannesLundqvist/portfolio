@@ -1,7 +1,3 @@
-$(function() {
-    $('body').removeClass('fade-out');
-});
-
 $('body').scrollspy({
   target: '#navbar'})
 
