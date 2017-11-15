@@ -6465,6 +6465,10 @@ html {
   display: block;
   object-fit: cover; }
 
+@media (min-width: 1400px) {
+  .project-hero p {
+    width: 80%; } }
+
 .project-subheading {
   text-transform: uppercase;
   margin-bottom: 0rem;
