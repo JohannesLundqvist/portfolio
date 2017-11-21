@@ -1,5 +1,20 @@
+$(window).scroll(function() {
+
+    var $elem = $('#solar-system');
+    var top_of_element = $($elem).offset().top;
+    var bottom_of_element = $($elem).offset().top + $($elem).outerHeight();
+    var bottom_of_screen = $(window).scrollTop() + window.innerHeight;
+    var top_of_screen = $(window).scrollTop();
+
+    if((bottom_of_screen > top_of_element) && (top_of_screen < bottom_of_element)){
+        $elem.addClass('start-animation');
+    }
+
+});
+
+
 $('body').scrollspy({
-  target: '#navbar'})
+    target: '#navbar'});
 
 $(".navbar-nav li a[href^='#']").on('click', function(e) {
    // prevent default anchor click behavior
@@ -24,22 +39,20 @@ $(".navbar-nav li a[href^='#']").on('click', function(e) {
 
 });
 
+
 //Logo scroll effect
 $(window).scroll(function() {
   $(".logo").css({
     "top": -($(window).scrollTop())/8 + "px"
   });
   });
+
 $(".carousel").swipe({
-
   swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
-
     if (direction == 'left') $(this).carousel('next');
     if (direction == 'right') $(this).carousel('prev');
-
   },
   allowPageScroll:"vertical"
-
 });
 
 //var screenWidth = $(window).height()-300;
@@ -56,4 +69,4 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
           $('.navbar a').on('click', function(){
                 $('#navmenu').collapse('hide');
             });
-        }
+        };

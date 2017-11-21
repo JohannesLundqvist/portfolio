@@ -6628,3 +6628,88 @@ section.project-contact {
 
 .project-yellow .project-subheading {
   color: #F1A208; }
+
+.start-animation svg #line {
+  stroke-dasharray: 1500;
+  animation: dash 1s linear forwards; }
+
+.start-animation svg #eclipse-1 {
+  stroke-dasharray: 2000;
+  animation: stroke 1s linear forwards; }
+
+.start-animation svg #eclipse-2 {
+  stroke-dasharray: 1500;
+  animation: stroke 1s 1s linear forwards; }
+
+.start-animation svg #eclipse-3 {
+  stroke-dasharray: 2000;
+  animation: stroke 2s 1s linear forwards; }
+
+.start-animation svg #eclipse-4 {
+  stroke-dasharray: 2400;
+  animation: bigstroke 2.5s 1s linear forwards; }
+
+.start-animation svg #planet-1, .start-animation svg #Research {
+  animation: fillIn 0.8s ease-in; }
+
+.start-animation svg #Define {
+  opacity: 0;
+  animation: fillIn 1s ease-in forwards; }
+
+.start-animation svg #planet-2 {
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 0;
+  animation: dash 5s forwards; }
+
+.start-animation svg #path-1 {
+  opacity: 0;
+  animation: fillIn 3s ease-in forwards; }
+
+.start-animation svg #planet-3, .start-animation svg #Analyse, .start-animation svg #dot-1, .start-animation svg #dot-2 {
+  opacity: 0;
+  animation: fillIn 0.3s 1s ease-in forwards; }
+
+.start-animation svg #dot-1, .start-animation svg #dot-2 {
+  opacity: 0;
+  animation: fillIn 0.8s 1s ease-in forwards; }
+
+.start-animation svg #planet-4, .start-animation svg #Ideate, .start-animation svg #saturn-ring, .start-animation svg #dot-3, .start-animation svg #dot-4, .start-animation svg #dot-5, .start-animation svg #dot-6, .start-animation svg #dot-7, .start-animation svg #dot-8 {
+  opacity: 0;
+  animation: fillIn 1s 1s ease-in forwards; }
+
+.start-animation svg #white-outline {
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 0;
+  animation: dash 16s forwards; }
+
+.start-animation svg #planet-5, .start-animation svg #Prototype, .start-animation svg #dot-9, .start-animation svg #dot-10, .start-animation svg #dot-11, .start-animation svg #dot-12 {
+  opacity: 0;
+  animation: fillIn 1.5s 0.7s ease-in forwards; }
+
+.start-animation svg #planet-6, .start-animation svg #Evaluate, .start-animation svg #dot-13, .start-animation svg #dot-14 {
+  opacity: 0;
+  animation: fillIn 1.7s 0.5s ease-in forwards; }
+
+.start-animation svg #Iterate, .start-animation svg #iterate-mask {
+  opacity: 0;
+  animation: fillIn 2s 0.5s ease-in forwards; }
+
+@keyframes fillIn {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 1500; }
+  to {
+    stroke-dashoffset: 0; } }
+
+@keyframes stroke {
+  to {
+    stroke-dashoffset: 2000; } }
+
+@keyframes bigstroke {
+  to {
+    stroke-dashoffset: 2400; } }

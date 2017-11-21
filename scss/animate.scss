@@ -1,0 +1,96 @@
+.solar-system{
+ }
+ .start-animation svg{
+  #line{
+  stroke-dasharray: 1500;
+  animation: dash 1s linear forwards;
+}
+#eclipse-1{
+  stroke-dasharray: 2000;
+  animation: stroke 1s linear forwards;
+}
+#eclipse-2{
+  stroke-dasharray: 1500;
+  animation: stroke 1s 1s linear forwards;
+}
+#eclipse-3{
+  stroke-dasharray: 2000;
+  animation: stroke 2s 1s linear forwards;
+}
+#eclipse-4{
+  stroke-dasharray: 2400;
+  animation: bigstroke 2.5s 1s linear forwards;
+}
+#planet-1, #Research{
+  animation: fillIn 0.8s ease-in;
+}
+#Define{
+  opacity:0;
+  animation: fillIn 1s ease-in forwards;
+}
+#planet-2{
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 0;
+  animation: dash 5s forwards;
+}
+#path-1{
+  opacity: 0;
+  animation: fillIn 3s ease-in forwards;
+}
+#planet-3, #Analyse, #dot-1, #dot-2 {
+  opacity: 0;
+  animation: fillIn 0.3s 1s ease-in forwards;
+}
+#dot-1, #dot-2{
+  opacity: 0;
+  animation: fillIn 0.8s 1s ease-in forwards;
+}
+#planet-4, #Ideate, #saturn-ring, #dot-3, #dot-4, #dot-5, #dot-6, #dot-7, #dot-8{
+  opacity: 0;
+  animation: fillIn 1s 1s ease-in forwards;
+}
+#white-outline{
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 0;
+  animation: dash 16s forwards;
+}
+
+#planet-5, #Prototype, #dot-9, #dot-10, #dot-11, #dot-12{
+  opacity: 0;
+  animation: fillIn 1.5s 0.7s ease-in forwards;
+}
+#planet-6, #Evaluate, #dot-13, #dot-14{
+  opacity: 0;
+  animation: fillIn 1.7s 0.5s ease-in forwards;
+}
+#Iterate, #iterate-mask{
+  opacity: 0;
+  animation: fillIn 2s 0.5s ease-in forwards;
+}
+
+@keyframes fillIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 1500;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes stroke {
+
+  to {
+    stroke-dashoffset: 2000;
+  }
+}
+@keyframes bigstroke {
+
+  to {
+    stroke-dashoffset: 2400;
+  }
+}
+}
