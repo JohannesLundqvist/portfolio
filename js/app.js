@@ -1,6 +1,5 @@
 $(window).scroll(function() {
-
-    var $elem = $('#solar-system');
+  var $elem = $('#solar-system');
     var top_of_element = $($elem).offset().top;
     var bottom_of_element = $($elem).offset().top + $($elem).outerHeight();
     var bottom_of_screen = $(window).scrollTop() + window.innerHeight;
@@ -9,7 +8,6 @@ $(window).scroll(function() {
     if((bottom_of_screen > top_of_element) && (top_of_screen < bottom_of_element)){
         $elem.addClass('start-animation');
     }
-
 });
 
 
