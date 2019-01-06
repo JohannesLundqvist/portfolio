@@ -6216,18 +6216,21 @@ section {
       .section-about .logo {
         max-width: 300px; } }
 
-#next-project .card-img-overlay {
-  background: #dbdbdb;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; }
-  #next-project .card-img-overlay .card-title {
-    font-family: 'GothamBoldItalic';
-    color: #383838;
-    text-transform: uppercase;
-    text-align: center;
-    font-size: 1rem; }
-
+/*#next-project{
+  .card-img-overlay{
+    background: #dbdbdb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .card-title{
+      font-family: 'GothamBoldItalic';
+      color: rgba(56,56,56,1);
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 1rem;
+    }
+  }
+}*/
 .card-project {
   overflow: hidden; }
   .card-project div.card-img-overlay {
@@ -6299,7 +6302,7 @@ nav .nav-link.active:after {
 .collapsing {
   transition-duration: 0.1s; }
 
-@media (max-width: 575px) {
+@media (max-width: 768px) {
   nav .container {
     margin: 0; }
     nav .container .navbar-brand img {
@@ -6365,14 +6368,6 @@ button:focus {
     transform: translateY(-7px) rotate(-45deg); }
 
 @font-face {
-  font-family: 'GothamBlack';
-  src: url("./../fonts/Gotham-Black.ttf") format("truetype"); }
-
-@font-face {
-  font-family: 'GothamBlackItalic';
-  src: url("./../fonts/Gotham-BlackItalic.ttf") format("truetype"); }
-
-@font-face {
   font-family: 'GothamBold';
   src: url("./../fonts/Gotham-Bold.ttf") format("truetype"); }
 
@@ -6385,28 +6380,8 @@ button:focus {
   src: url("./../fonts/Gotham-Book.ttf") format("truetype"); }
 
 @font-face {
-  font-family: 'GothamBookItalic';
-  src: url("./../fonts/Gotham-BookItalic.ttf") format("truetype"); }
-
-@font-face {
-  font-family: 'GothamLight';
-  src: url("./../fonts/Gotham-Light.ttf") format("truetype"); }
-
-@font-face {
   font-family: 'GothamMedium';
   src: url("./../fonts/Gotham-Medium.ttf") format("truetype"); }
-
-@font-face {
-  font-family: 'GothamThin';
-  src: url("./../fonts/Gotham-Thin.ttf") format("truetype"); }
-
-@font-face {
-  font-family: 'GothamUltra';
-  src: url("./../fonts/Gotham-Ultra.ttf") format("truetype"); }
-
-@font-face {
-  font-family: 'GothamXLight';
-  src: url("./../fonts/Gotham-XLight.ttf") format("truetype"); }
 
 nav {
   font-family: 'GothamBold', Roboto, sans-serif; }
