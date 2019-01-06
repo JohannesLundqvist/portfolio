@@ -6520,6 +6520,9 @@ section.project-text {
 section.project-image {
   z-index: 3; }
 
+section.project-video {
+  z-index: 3; }
+
 .carousel {
   padding-bottom: 1rem; }
 
@@ -6530,10 +6533,18 @@ img.carousel-item-maxheight {
   max-height: 500px; }
 
 .carousel-control-prev {
-  justify-content: flex-start; }
+  justify-content: flex-start;
+  left: 15px; }
+
+.carousel-control-prev-icon.icon-white {
+  background-image: url(./../img/arrow-left-white.svg); }
+
+.carousel-control-next-icon.icon-white {
+  background-image: url(./../img/arrow-right-white.svg); }
 
 .carousel-control-next {
-  justify-content: flex-end; }
+  justify-content: flex-end;
+  right: 15px; }
 
 .carousel-indicators {
   bottom: 0;
@@ -6628,6 +6639,9 @@ section.project-contact {
 
 .project-yellow .project-subheading {
   color: #F1A208; }
+
+.project-darkred .project-subheading {
+  color: #A11F29; }
 
 .start-animation svg {
   /*Line that goes throught the whole svg*/
