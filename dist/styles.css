@@ -6508,28 +6508,30 @@ img.carousel-item-maxheight {
   max-height: 500px; }
 
 .carousel-control-prev {
-  justify-content: flex-start;
-  left: 15px; }
+  justify-content: flex-start; }
 
 .carousel-control-prev-icon.icon-white {
-  background-image: url(./../img/arrow-left-white.svg); }
+  background-image: url(./../img/arrow-left-white.svg);
+  margin-left: 15px; }
 
 .carousel-control-next-icon.icon-white {
-  background-image: url(./../img/arrow-right-white.svg); }
+  background-image: url(./../img/arrow-right-white.svg);
+  margin-right: 15px; }
 
 .carousel-control-next {
-  justify-content: flex-end;
-  right: 15px; }
+  justify-content: flex-end; }
 
 .carousel-indicators {
   bottom: 0;
   margin-bottom: 0; }
 
 .carousel-control-next-icon {
-  background-image: url("./../img/arrow-right.svg"); }
+  background-image: url("./../img/arrow-right.svg");
+  background-size: auto; }
 
 .carousel-control-prev-icon {
-  background-image: url("./../img/arrow-left.svg"); }
+  background-image: url("./../img/arrow-left.svg");
+  background-size: auto; }
 
 section.project-contact {
   background: #f3f3f3;
@@ -6616,7 +6618,7 @@ section.project-contact {
   color: #F1A208; }
 
 .project-darkred .project-subheading {
-  color: #A11F29; }
+  color: #C50128; }
 
 .start-animation svg {
   /*Line that goes throught the whole svg*/
